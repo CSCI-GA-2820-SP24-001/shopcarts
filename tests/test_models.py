@@ -79,6 +79,25 @@ class TestShopcarts(TestCase):
         }
         self.assertDictEqual(dictionary_data, ground_truth_data)
 
+    def test_shopcart_deserialization(self):
+        """It should be deserializing the shopcart properly."""
+        data_to_deserealize = {
+            "id": 21,
+            "user_id": "101",
+            "creation_date": "2024-01-01",
+            "last_updated": "2024-01-01",
+            "total_price": 0,
+            "items": [],
+        }
+        shopcart = Shopcart()
+        deserialized_shopcart = shopcart.deserialize(data_to_deserealize)
+
+        self.assertEqual(deserialized_shopcart.user_id, "101")
+        self.assertEqual(deserialized_shopcart.creation_date, "2024-01-01")
+        self.assertEqual(deserialized_shopcart.last_updated, "2024-01-01")
+        self.assertEqual(deserialized_shopcart.total_price, 0)
+        self.assertEqual(deserialized_shopcart.items, [])
+
 
 class TestItems(TestCase):
     """Test Cases for Shopcarts Model"""
@@ -177,3 +196,24 @@ class TestItems(TestCase):
             "subtotal": 20,
         }
         self.assertDictEqual(dictionary_data, ground_truth_data)
+
+    def test_deserialize_item(self):
+        """It should be deserializinng the item properly."""
+        data_to_deserealize = {
+            "id": 22,
+            "product_name": "Foo",
+            "cart_id": 1,
+            "product_id": 2,
+            "product_price": 10,
+            "quantity": 2,
+            "subtotal": 20,
+        }
+        item = Item()
+        deserialized_item = item.deserialize(data_to_deserealize)
+
+        self.assertEqual(deserialized_item.product_name, "Foo")
+        self.assertEqual(deserialized_item.cart_id, 1)
+        self.assertEqual(deserialized_item.product_id, 2)
+        self.assertEqual(deserialized_item.product_price, 10)
+        self.assertEqual(deserialized_item.quantity, 2)
+        self.assertEqual(deserialized_item.subtotal, 20)
