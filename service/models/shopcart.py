@@ -23,8 +23,22 @@ class Shopcart(db.Model, PersistentBase):
     user_id = db.Column(db.String(63))
     creation_date = db.Column(db.DateTime)
     last_updated = db.Column(db.DateTime)
-    total_price = db.Column(db.Numeric(precision=10, scale=2))
     items = db.relationship("Item", backref="shopcart", passive_deletes=True)
+    _total_price = db.Column(
+        "total_price", db.Numeric(precision=10, scale=2), nullable=False
+    )
+
+    @property
+    def total_price(self):
+        """Returning the total price."""
+        return self._total_price
+
+    @total_price.setter
+    def total_price(self, items: list[Item]):
+        """Triggered to update item quantity and recalculate subtotal."""
+        self._total_price = 0
+        for item in self.items:
+            self.total_price += item.subtotal
 
     def __repr__(self):
         return f"<Shopcart of a user with an id: {self.user_id}, exists under id=[{self.id}]>"
