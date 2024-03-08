@@ -66,7 +66,6 @@ class Shopcart(db.Model, PersistentBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.id = data["id"]
             self.user_id = data["user_id"]
             self.creation_date = data["creation_date"]
             self.last_updated = data["last_updated"]
