@@ -58,6 +58,27 @@ class TestShopcarts(TestCase):
         data = Shopcart.find(resource.id)
         self.assertEqual(data.user_id, resource.user_id)
 
+    def test_shopcart_serialization(self):
+        """It should properly serialize the shopcart."""
+        resource = ShopcartFactory(
+            id=21,
+            user_id="101",
+            creation_date="2024-01-01",
+            last_updated="2024-01-01",
+        )
+
+        print(resource.serialize())
+        dictionary_data = resource.serialize()
+        ground_truth_data = {
+            "id": 21,
+            "user_id": "101",
+            "creation_date": "2024-01-01",
+            "last_updated": "2024-01-01",
+            "total_price": 0,
+            "items": [],
+        }
+        self.assertDictEqual(dictionary_data, ground_truth_data)
+
 
 class TestItems(TestCase):
     """Test Cases for Shopcarts Model"""
@@ -132,3 +153,27 @@ class TestItems(TestCase):
         """It should be returning the representation of an item."""
         item = Item(product_name="Foo", id=22)
         self.assertEqual("<Item Foo with id=[22]>", str(item))
+
+    def test_serialize_item(self):
+        """It should properly serialize the item."""
+        item = ItemFactory(
+            id=22,
+            product_name="Foo",
+            cart_id=1,
+            product_id=2,
+            product_price=10,
+            quantity=2,
+            subtotal=20,
+        )
+
+        dictionary_data = item.serialize()
+        ground_truth_data = {
+            "id": 22,
+            "product_name": "Foo",
+            "cart_id": 1,
+            "product_id": 2,
+            "product_price": 10,
+            "quantity": 2,
+            "subtotal": 20,
+        }
+        self.assertDictEqual(dictionary_data, ground_truth_data)
