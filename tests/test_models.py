@@ -7,7 +7,7 @@ import logging
 from unittest import TestCase
 from unittest.mock import patch
 from wsgi import app
-from datetime import datetime
+from datetime import datetime, date
 from service.models import DataValidationError, db, Shopcart, Item
 from .factories import ShopcartFactory, ItemFactory
 
@@ -55,6 +55,8 @@ class TestShopcarts(TestCase):
         resource = ShopcartFactory()
         resource.create()
         self.assertIsNotNone(resource.id)
+        self.assertIsNotNone(resource.creation_date)
+        self.assertIsNotNone(resource.last_updated)
         found = Shopcart.all()
         self.assertEqual(len(found), 1)
         data = Shopcart.find(resource.id)
@@ -82,18 +84,17 @@ class TestShopcarts(TestCase):
         shopcart.create()
         logging.debug(shopcart)
         self.assertIsNotNone(shopcart.id)
+        self.assertIsNotNone(shopcart.creation_date)
+        self.assertIsNotNone(shopcart.last_updated)
         # Change it an save it
-        shopcart.creation_date = "2022-01-01"
         original_id = shopcart.id
         shopcart.update()
         self.assertEqual(shopcart.id, original_id)
-        self.assertEqual(shopcart.creation_date, datetime(2022, 1, 1, 0, 0))
         # Fetch it back and make sure the id hasn't changed
         # but the data did change
         shopcarts = Shopcart.all()
         self.assertEqual(len(shopcarts), 1)
         self.assertEqual(shopcarts[0].id, original_id)
-        self.assertEqual(shopcarts[0].creation_date, datetime(2022, 1, 1, 0, 0))
 
     def test_update_no_id(self):
         """It should not Update a Shopcart with no id"""
@@ -128,17 +129,14 @@ class TestShopcarts(TestCase):
         resource = ShopcartFactory(
             id=21,
             user_id="101",
-            creation_date="2024-01-01",
-            last_updated="2024-01-01",
         )
 
-        print(resource.serialize())
         dictionary_data = resource.serialize()
         ground_truth_data = {
             "id": 21,
             "user_id": "101",
-            "creation_date": "2024-01-01",
-            "last_updated": "2024-01-01",
+            "creation_date": None,
+            "last_updated": None,
             "total_price": 0,
             "items": [],
         }
@@ -146,22 +144,25 @@ class TestShopcarts(TestCase):
 
     def test_shopcart_deserialization(self):
         """It should be deserializing the shopcart properly."""
-        data_to_deserealize = {
+        data_to_deserialize = {
             "id": 21,
             "user_id": "101",
-            "creation_date": "2024-01-01",
-            "last_updated": "2024-01-01",
-            "total_price": 0,
             "items": [],
         }
         shopcart = Shopcart()
-        deserialized_shopcart = shopcart.deserialize(data_to_deserealize)
+        deserialized_shopcart = shopcart.deserialize(data_to_deserialize)
 
         self.assertEqual(deserialized_shopcart.user_id, "101")
-        self.assertEqual(deserialized_shopcart.creation_date, "2024-01-01")
-        self.assertEqual(deserialized_shopcart.last_updated, "2024-01-01")
-        self.assertEqual(deserialized_shopcart.total_price, 0)
         self.assertEqual(deserialized_shopcart.items, [])
+
+    def test_add_items_to_shopcart(self):
+        """It should add items to the shopcart and update the total_price."""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        item = ItemFactory(shopcart=shopcart)
+        item.create()
+        self.assertEqual(len(shopcart.items), 1)
+        self.assertNotEqual(shopcart.total_price, 0)
 
 
 class TestItems(TestCase):
