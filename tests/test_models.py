@@ -7,6 +7,7 @@ import logging
 from unittest import TestCase
 from unittest.mock import patch
 from wsgi import app
+from datetime import datetime
 from service.models import DataValidationError, db, Shopcart, Item
 from .factories import ShopcartFactory, ItemFactory
 
@@ -49,7 +50,7 @@ class TestShopcarts(TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_shopcarts(self):
+    def test_add_a_shopcart(self):
         """It should create a Shopcarts"""
         resource = ShopcartFactory()
         resource.create()
@@ -58,6 +59,69 @@ class TestShopcarts(TestCase):
         self.assertEqual(len(found), 1)
         data = Shopcart.find(resource.id)
         self.assertEqual(data.user_id, resource.user_id)
+        self.assertEqual(data.total_price, 0)
+
+    def test_read_a_shopcart(self):
+        """It should Read a Shopcart"""
+        shopcart = ShopcartFactory()
+        logging.debug(shopcart)
+        shopcart.id = None
+        shopcart.create()
+        self.assertIsNotNone(shopcart.id)
+        # Fetch it back
+        found_shopcart = Shopcart.find(shopcart.id)
+        self.assertEqual(found_shopcart.id, shopcart.id)
+        self.assertEqual(found_shopcart.user_id, shopcart.user_id)
+        self.assertEqual(found_shopcart.creation_date, shopcart.creation_date)
+
+    def test_update_a_shopcart(self):
+        """It should Update a Shopcart"""
+        shopcart = ShopcartFactory()
+        logging.debug(shopcart)
+        shopcart.id = None
+        shopcart.create()
+        logging.debug(shopcart)
+        self.assertIsNotNone(shopcart.id)
+        # Change it an save it
+        shopcart.creation_date = "2022-01-01"
+        original_id = shopcart.id
+        shopcart.update()
+        self.assertEqual(shopcart.id, original_id)
+        self.assertEqual(shopcart.creation_date, datetime(2022, 1, 1, 0, 0))
+        # Fetch it back and make sure the id hasn't changed
+        # but the data did change
+        shopcarts = Shopcart.all()
+        self.assertEqual(len(shopcarts), 1)
+        self.assertEqual(shopcarts[0].id, original_id)
+        self.assertEqual(shopcarts[0].creation_date, datetime(2022, 1, 1, 0, 0))
+
+    def test_update_no_id(self):
+        """It should not Update a Shopcart with no id"""
+        shopcart = ShopcartFactory()
+        logging.debug(shopcart)
+        shopcart.id = None
+        self.assertRaises(DataValidationError, shopcart.update)
+
+    def test_delete_a_shopcart(self):
+        """It should Delete a Shopcart"""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        self.assertEqual(len(Shopcart.all()), 1)
+        # delete the shopcart and make sure it isn't in the database
+        shopcart.delete()
+        self.assertEqual(len(Shopcart.all()), 0)
+
+    def test_list_all_shopcarts(self):
+        """It should List all Shopcarts in the database"""
+        shopcarts = Shopcart.all()
+        self.assertEqual(shopcarts, [])
+        # Create 5 Shopcarts
+        for _ in range(5):
+            shopcart = ShopcartFactory()
+            shopcart.create()
+        # See if we get back 5 shopcarts
+        shopcarts = Shopcart.all()
+        self.assertEqual(len(shopcarts), 5)
 
     def test_shopcart_serialization(self):
         """It should properly serialize the shopcart."""
