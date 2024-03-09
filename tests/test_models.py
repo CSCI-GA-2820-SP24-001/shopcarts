@@ -1,10 +1,11 @@
 """
-Test cases for Pet Model
+Test cases for my Models
 """
 
 import os
 import logging
 from unittest import TestCase
+from unittest.mock import patch
 from wsgi import app
 from service.models import DataValidationError, db, Shopcart, Item
 from .factories import ShopcartFactory, ItemFactory
@@ -100,7 +101,7 @@ class TestShopcarts(TestCase):
 
 
 class TestItems(TestCase):
-    """Test Cases for Shopcarts Model"""
+    """Test Cases for Items Model"""
 
     @classmethod
     def setUpClass(cls):
@@ -217,3 +218,153 @@ class TestItems(TestCase):
         self.assertEqual(deserialized_item.product_price, 10)
         self.assertEqual(deserialized_item.quantity, 2)
         self.assertEqual(deserialized_item.subtotal, 20)
+
+    def test_deserialize_errors(self):
+        """It should raise an error if the data is not correct."""
+        item = Item()
+        try:
+            item.deserialize({"id": 22, "product_name": "Foo"})
+            self.assertTrue(False)
+        except DataValidationError:
+            self.assertTrue(True)
+
+    def test_invalid_attribute(self):
+        """It should raise an error if the attribute is not correct."""
+        try:
+            item = Item(inexistent_id="random_string", product_name="Foo")
+            self.assertTrue(False)
+        except TypeError:
+            self.assertTrue(True)
+
+
+class TestPersistentBase(TestCase):
+    """Test Cases for PersistentBase Model"""
+
+    @classmethod
+    def setUpClass(cls):
+        """This runs once before the entire test suite"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        app.app_context().push()
+
+    @classmethod
+    def tearDownClass(cls):
+        """This runs once after the entire test suite"""
+        db.session.close()
+
+    def setUp(self):
+        """This runs before each test"""
+        db.session.query(Item).delete()  # clean up the last tests
+        db.session.commit()
+
+    def tearDown(self):
+        """This runs after each test"""
+        db.session.remove()
+
+    ######################################################################
+    #  T E S T   C A S E S
+    ######################################################################
+
+
+######################################################################
+#  T E S T   S H O P C A R T S   E X C E P T I O N   H A N D L E R S
+######################################################################
+class TestShopcartExceptionHandlers(TestCase):
+    """Shopcart Model Exception Handlers"""
+
+    @classmethod
+    def setUpClass(cls):
+        """This runs once before the entire test suite"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        app.app_context().push()
+
+    @classmethod
+    def tearDownClass(cls):
+        """This runs once after the entire test suite"""
+        db.session.close()
+
+    def setUp(self):
+        """This runs before each test"""
+        db.session.query(Shopcart).delete()  # clean up the last tests
+        db.session.commit()
+
+    def tearDown(self):
+        """This runs after each test"""
+        db.session.remove()
+
+    @patch("service.models.db.session.commit")
+    def test_create_exception(self, exception_mock):
+        """It should catch a create exception"""
+        exception_mock.side_effect = Exception()
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.create)
+
+    @patch("service.models.db.session.commit")
+    def test_update_exception(self, exception_mock):
+        """It should catch a update exception"""
+        exception_mock.side_effect = Exception()
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.update)
+
+    @patch("service.models.db.session.commit")
+    def test_delete_exception(self, exception_mock):
+        """It should catch a delete exception"""
+        exception_mock.side_effect = Exception()
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.delete)
+
+
+######################################################################
+#  T E S T   S H O P C A R T S   E X C E P T I O N   H A N D L E R S
+######################################################################
+class TestItemExceptionHandlers(TestCase):
+    """Item Model Exception Handlers"""
+
+    @classmethod
+    def setUpClass(cls):
+        """This runs once before the entire test suite"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        app.app_context().push()
+
+    @classmethod
+    def tearDownClass(cls):
+        """This runs once after the entire test suite"""
+        db.session.close()
+
+    def setUp(self):
+        """This runs before each test"""
+        db.session.query(Item).delete()  # clean up the last tests
+        db.session.commit()
+
+    def tearDown(self):
+        """This runs after each test"""
+        db.session.remove()
+
+    @patch("service.models.db.session.commit")
+    def test_create_exception(self, exception_mock):
+        """It should catch a create exception"""
+        exception_mock.side_effect = Exception()
+        item = Item()
+        self.assertRaises(DataValidationError, item.create)
+
+    @patch("service.models.db.session.commit")
+    def test_update_exception(self, exception_mock):
+        """It should catch a update exception"""
+        exception_mock.side_effect = Exception()
+        item = Item()
+        self.assertRaises(DataValidationError, item.update)
+
+    @patch("service.models.db.session.commit")
+    def test_delete_exception(self, exception_mock):
+        """It should catch a delete exception"""
+        exception_mock.side_effect = Exception()
+        item = Item()
+        self.assertRaises(DataValidationError, item.delete)
