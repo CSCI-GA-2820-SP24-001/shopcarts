@@ -43,6 +43,46 @@ class Shopcart(db.Model, PersistentBase):
     def __repr__(self):
         return f"<Shopcart of a user with an id: {self.user_id}, exists under id=[{self.id}]>"
 
+    def create(self):
+        """
+        Creates a Shopcart to the database
+        """
+        logger.info("Creating shopcart for user ID: %s", self.user_id)
+        # id must be none to generate next primary key
+        self.id = None  # pylint: disable=invalid-name
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error creating record: %s", self)
+            raise DataValidationError(e) from e
+
+    def update(self):
+        """
+        Updates a Shopcart to the database
+        """
+        logger.info("Saving user %s's shopcart.", self.user_id)
+        if not self.id:
+            raise DataValidationError("Update called with empty ID field")
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error updating record: %s", self)
+            raise DataValidationError(e) from e
+
+    def delete(self):
+        """Removes a Shopcart from the data store"""
+        logger.info("Deleting %s's shopcart", self.user_id)
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            logger.error("Error deleting record: %s", self)
+            raise DataValidationError(e) from e
+
     def serialize(self):
         """Serializes a Shopcart into a dictionary"""
         shopcart = {
