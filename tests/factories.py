@@ -19,9 +19,6 @@ class ShopcartFactory(factory.Factory):
 
     id = factory.Sequence(lambda n: n)
     user_id = FuzzyInteger(1, 1000)
-    creation_date = FuzzyDate(date(2008, 1, 1))
-    last_updated = creation_date
-    total_price = 0
 
     @factory.post_generation
     def items(
