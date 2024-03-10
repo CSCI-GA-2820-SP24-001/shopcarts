@@ -9,10 +9,13 @@ from wsgi import app
 from service.common import status
 from service.models.shopcart import Shopcart
 from service.models.persistent_base import db
+from .factories import ShopcartFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
+BASE_URL = "/shopcarts"
+
 
 
 ######################################################################
@@ -56,4 +59,28 @@ class TestYourResourceService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    # Todo: Add your test cases here...
+    def test_create_shopcart(self):
+        """It should Create a new Shopcart"""
+        test_shopcart = ShopcartFactory()
+        logging.debug("Test Shopcart: %s", test_shopcart.serialize())
+        response = self.client.post(BASE_URL, json=test_shopcart.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Make sure location header is set
+        location = response.headers.get("Location", None)
+        self.assertIsNotNone(location)
+
+        # Check the data is correct
+        new_shopcart = response.get_json()
+        self.assertEqual(new_shopcart["user_id"], test_shopcart.user_id)
+        self.assertEqual(new_shopcart["items"], test_shopcart.items)
+        # self.assertEqual(new_shopcart["creation_date"], test_shopcart.creation_date) # will not be testing for this
+        # self.assertEqual(new_shopcart["last_updated"], test_shopcart.last_updated) # will not be testing for this
+
+        # Todo: Uncomment this code when get_shopcarts is implemented
+        # Check that the location header was correct
+        # response = self.client.get(location)
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # new_shopcart = response.get_json()
+        # self.assertEqual(new_shopcart["user_id"], test_shopcart.user_id)
+        # self.assertEqual(new_shopcart["items"], test_shopcart.items)
