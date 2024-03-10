@@ -17,12 +17,11 @@ DATABASE_URI = os.getenv(
 BASE_URL = "/shopcarts"
 
 
-
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
 # pylint: disable=too-many-public-methods
-class TestYourResourceService(TestCase):
+class TestShopcartService(TestCase):
     """REST API Server Tests"""
 
     @classmethod
@@ -49,6 +48,22 @@ class TestYourResourceService(TestCase):
     def tearDown(self):
         """This runs after each test"""
         db.session.remove()
+
+    def _create_shopcarts(self, count):
+        """Factory method to create shopcarts in bulk"""
+        shopcarts = []
+        for _ in range(count):
+            test_shopcart = ShopcartFactory()
+            response = self.client.post(BASE_URL, json=test_shopcart.serialize())
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test shopcart",
+            )
+            new_shopcart = response.get_json()
+            test_shopcart.id = new_shopcart["id"]
+            shopcarts.append(test_shopcart)
+        return shopcarts
 
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
@@ -84,3 +99,20 @@ class TestYourResourceService(TestCase):
         # new_shopcart = response.get_json()
         # self.assertEqual(new_shopcart["user_id"], test_shopcart.user_id)
         # self.assertEqual(new_shopcart["items"], test_shopcart.items)
+
+    def test_get_shopcart(self):
+        """It should Get a single Shopcart"""
+        # get the id of a shopcart
+        test_shopcart = self._create_shopcarts(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["user_id"], test_shopcart.user_id)
+
+    def test_get_shopcart_not_found(self):
+        """It should not Get a Shopcart that's not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
