@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
-        "sqlalchemy",
         "psycopg",
+        "shopcart",
+        "shopcarts",
+        "sqlalchemy",
         "testdb"
     ]
 }
