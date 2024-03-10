@@ -15,14 +15,15 @@
 ######################################################################
 
 """
-Pet Store Service
+Shopcart Store Service
 
 This service implements a REST API that allows you to Create, Read, Update
-and Delete Pets from the inventory of pets in the PetShop
+and Delete Shopcarts from the inventory of shopcarts in the ShopcartShop
 """
-
+from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
 from service.common import status  # HTTP Status Codes
+from service.models import Shopcart
 
 
 ######################################################################
@@ -41,4 +42,56 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-# Todo: Place your REST API code here ...
+######################################################################
+# CREATE A NEW SHOPCART
+######################################################################
+@app.route("/shopcarts", methods=["POST"])
+def create_shopcarts():
+    """
+    Creates a Shopcart
+
+    This endpoint will create a Shopcart based the data in the body that is posted
+    """
+    app.logger.info("Request to create a shopcart")
+    check_content_type("application/json")
+
+    shopcart = Shopcart()
+    shopcart.deserialize(request.get_json())
+    shopcart.create()
+    message = shopcart.serialize()
+    # Todo: uncomment this code when get_shopcarts is implemented
+    # location_url = url_for("get_shopcarts", shopcart_id=shopcart.id, _external=True)
+    location_url = "unknown"
+
+    app.logger.info("Shopcart with ID: %d created.", shopcart.id)
+    return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+
+
+######################################################################
+# Checks the ContentType of a request
+######################################################################
+def check_content_type(content_type):
+    """Checks that the media type is correct"""
+    if "Content-Type" not in request.headers:
+        app.logger.error("No Content-Type specified.")
+        error(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {content_type}",
+        )
+
+    if request.headers["Content-Type"] == content_type:
+        return
+
+    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+    error(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        f"Content-Type must be {content_type}",
+    )
+
+######################################################################
+# Logs error messages before aborting
+######################################################################
+def error(status_code, reason):
+    """Logs the error and then aborts"""
+    app.logger.error(reason)
+    abort(status_code, reason)
