@@ -15,10 +15,10 @@
 ######################################################################
 
 """
-Pet Store Service
+Shopcart Store Service
 
 This service implements a REST API that allows you to Create, Read, Update
-and Delete Pets from the inventory of pets in the PetShop
+and Delete Shopcarts from the inventory of shopcarts in the ShopcartShop
 """
 
 from flask import current_app as app  # Import Flask application
@@ -41,4 +41,57 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-# Todo: Place your REST API code here ...
+
+######################################################################
+# DELETE A PET
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["DELETE"])
+def delete_shopcarts(shopcart_id):
+    """
+    Delete a Shopcart
+
+    This endpoint will delete a Shopcart based the id specified in the path
+    """
+    app.logger.info("Request to delete shopcart with id: %d", shopcart_id)
+
+    shopcart = Shopcart.find(shopcart_id)
+    if shopcart:
+        shopcart.delete()
+
+    app.logger.info("Shopcart with ID: %d delete complete.", shopcart_id)
+    return "", status.HTTP_204_NO_CONTENT
+
+
+    ######################################################################
+# Checks the ContentType of a request
+######################################################################
+def check_content_type(content_type):
+    """Checks that the media type is correct"""
+    if "Content-Type" not in request.headers:
+        app.logger.error("No Content-Type specified.")
+        error(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {content_type}",
+        )
+
+    if request.headers["Content-Type"] == content_type:
+        return
+
+    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+    error(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        f"Content-Type must be {content_type}",
+    )
+
+
+######################################################################
+# Logs error messages before aborting
+######################################################################
+def error(status_code, reason):
+    """Logs the error and then aborts"""
+    app.logger.error(reason)
+    abort(status_code, reason)
+
+    
+
+

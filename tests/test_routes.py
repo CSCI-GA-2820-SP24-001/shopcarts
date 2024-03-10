@@ -14,6 +14,7 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
 
+BASE_URL = "/shopcarts"
 
 ######################################################################
 #  T E S T   C A S E S
@@ -56,4 +57,12 @@ class TestYourResourceService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    # Todo: Add your test cases here...
+    def test_delete_shopcart(self):
+        """It should Delete a Shopcart"""
+        test_shopcart = self._create_shopcarts(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_shopcart.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
