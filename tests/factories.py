@@ -18,7 +18,7 @@ class ShopcartFactory(factory.Factory):
         model = Shopcart
 
     id = factory.Sequence(lambda n: n)
-    user_id = FuzzyInteger(1, 1000)
+    user_id = FuzzyChoice(choices=["101", "101019", "1010101222”, “2222"])
 
     @factory.post_generation
     def items(
