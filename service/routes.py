@@ -32,8 +32,13 @@ from service.models import Shopcart
 @app.route("/")
 def index():
     """Root URL response"""
+    app.logger.info("Request for the index page to be returned.")
     return (
-        "Reminder: return some useful information in json format about the service here",
+        jsonify(
+            name="Shopcart REST API Service",
+            version="1.0",
+            url=url_for("index", _external=True),
+        ),
         status.HTTP_200_OK,
     )
 
@@ -110,6 +115,7 @@ def delete_shopcarts(shopcart_id):
     app.logger.info("Shopcart with ID: %d delete complete.", shopcart_id)
     return "", status.HTTP_204_NO_CONTENT
 
+
 ######################################################################
 # LIST ALL SHOPCARTS
 ######################################################################
@@ -133,6 +139,7 @@ def list_shopcarts():
     results = [shopcart.serialize() for shopcart in shopcarts]
     app.logger.info("Returning %d shopcarts", len(results))
     return jsonify(results), status.HTTP_200_OK
+
 
 ######################################################################
 # UPDATE AN EXISTING SHOPCART
