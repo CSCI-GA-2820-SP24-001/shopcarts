@@ -126,7 +126,15 @@ class TestShopcartService(TestCase):
         # make sure they are deleted
         response = self.client.get(f"{BASE_URL}/{test_shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
+        
+    def test_get_shopcart_list(self):
+        """It should Get a list of Shopcarts"""
+        self._create_shopcarts(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+        
     def test_update_shopcart(self):
         """It should Update an existing Shopcart"""
         # create a shopcart to update
