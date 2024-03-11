@@ -7,25 +7,14 @@ This is a skeleton you can use to start your projects
 
 ## Overview
 
-This project template contains starter code for your class project. The `/service` folder contains your `models.py` file for your model and a `routes.py` file for your service. The `/tests` folder has test case starter code for testing the model and the service separately. All you need to do is add your functionality. You can use the [lab-flask-tdd](https://github.com/nyu-devops/lab-flask-tdd) for code examples to copy from.
-
-## Automatic Setup
-
-The best way to use this repo is to start your own repo using it as a git template. To do this just press the green **Use this template** button in GitHub and this will become the source for your repository.
-
-## Manual Setup
-
-You can also clone this repository and then copy and paste the starter code into your project repo folder on your local computer. Be careful not to copy over your own `README.md` file so be selective in what you copy.
-
-There are 4 hidden files that you will need to copy manually if you use the Mac Finder or Windows Explorer to copy files from this folder into your repo folder.
-
-These should be copied using a bash shell as follows:
+This project contains code for `shopcarts` microservice. The `/service` folder contains your `models/` folder for our models and a `routes.py` file for the `shopcarts` service. The `/tests` folder has test cases for testing the model and the service separately. You can simply start the testing process once you clone the repository and reopen it in the container. After that is done, please run
 
 ```bash
-    cp .gitignore  ../<your_repo_folder>/
-    cp .flaskenv ../<your_repo_folder>/
-    cp .gitattributes ../<your_repo_folder>/
+pytest
 ```
+
+To see all the tests passing.
+
 
 ## Contents
 
@@ -42,7 +31,7 @@ pyproject.toml      - Poetry list of Python libraries required by your code
 service/                   - service python package
 ├── __init__.py            - package initializer
 ├── config.py              - configuration parameters
-├── models.py              - module with business models
+├── models/                - module with data models (Shopcart, Item models both are here)
 ├── routes.py              - module with service routes
 └── common                 - common code package
     ├── cli_commands.py    - Flask command to recreate all tables
@@ -52,8 +41,9 @@ service/                   - service python package
 
 tests/                     - test cases package
 ├── __init__.py            - package initializer
+├── factories.py           - factory faker file which generates data for our models
 ├── test_cli_commands.py   - test suite for the CLI
-├── test_models.py         - test suite for business models
+├── test_models.py         - test suite for data models
 └── test_routes.py         - test suite for service routes
 ```
 
