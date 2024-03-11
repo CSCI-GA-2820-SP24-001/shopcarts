@@ -110,6 +110,29 @@ def delete_shopcarts(shopcart_id):
     app.logger.info("Shopcart with ID: %d delete complete.", shopcart_id)
     return "", status.HTTP_204_NO_CONTENT
 
+######################################################################
+# LIST ALL SHOPCARTS
+######################################################################
+@app.route("/shopcarts", methods=["GET"])
+def list_shopcarts():
+    """Returns all Shopcarts"""
+    app.logger.info("Request for shopcart list")
+
+    shopcarts = []
+
+    # # See if any query filters were passed in
+    # category = request.args.get("category")
+    # name = request.args.get("name")
+    # if category:
+    #     shopcarts = Shopcart.find_by_category(category)
+    # elif name:
+    #     shopcarts = Shopcart.find_by_name(name)
+    # else:
+    shopcarts = Shopcart.all()
+
+    results = [shopcart.serialize() for shopcart in shopcarts]
+    app.logger.info("Returning %d shopcarts", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
