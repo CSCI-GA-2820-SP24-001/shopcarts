@@ -126,3 +126,29 @@ class TestShopcartService(TestCase):
         # make sure they are deleted
         response = self.client.get(f"{BASE_URL}/{test_shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+######################################################################
+#  T E S T   S A D   P A T H S
+######################################################################
+class TestSadPaths(TestCase):
+    """Test REST Exception Handling"""
+
+    def setUp(self):
+        """Runs before each test"""
+        self.client = app.test_client()
+
+    def test_create_shopcart_no_data(self):
+        """It should not Create a Shopcart with missing data"""
+        response = self.client.post(BASE_URL, json={})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_shopcart_no_content_type(self):
+        """It should not Create a Shopcart with no content type"""
+        response = self.client.post(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_create_shopcart_wrong_content_type(self):
+        """It should not Create a Shopcart with the wrong content type"""
+        response = self.client.post(BASE_URL, data="hello", content_type="text/html")
+        self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
