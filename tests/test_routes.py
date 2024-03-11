@@ -126,7 +126,7 @@ class TestShopcartService(TestCase):
         # make sure they are deleted
         response = self.client.get(f"{BASE_URL}/{test_shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
+        
     def test_get_shopcart_list(self):
         """It should Get a list of Shopcarts"""
         self._create_shopcarts(5)
@@ -134,6 +134,27 @@ class TestShopcartService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
+        
+    def test_update_shopcart(self):
+        """It should Update an existing Shopcart"""
+        # create a shopcart to update
+        test_shopcart = ShopcartFactory()
+        response = self.client.post(BASE_URL, json=test_shopcart.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # update the shopcart
+        new_shopcart = response.get_json()
+        logging.debug(new_shopcart)
+        print("BOOM", new_shopcart)
+        new_shopcart["user_id"] = "123"
+        print("BOOM", new_shopcart)
+        response = self.client.put(
+            f"{BASE_URL}/{new_shopcart['id']}", json=new_shopcart
+        )
+        print("BOOM", response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_shopcart = response.get_json()
+        self.assertEqual(updated_shopcart["user_id"], "123")
 
 
 ######################################################################
