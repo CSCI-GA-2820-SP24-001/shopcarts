@@ -197,6 +197,39 @@ class TestShopcartService(TestCase):
         self.assertEqual(data["product_price"], str(item.product_price))
         self.assertEqual(data["subtotal"], str(item.subtotal))
 
+    def test_get_item(self):
+        """It should Get an item from an shopcart"""
+        # create a known item
+        shopcart = self._create_shopcarts(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        data = resp.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # retrieve it back
+        resp = self.client.get(
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+        logging.debug(data)
+        self.assertEqual(data["product_name"], item.product_name)
+        self.assertEqual(data["cart_id"], shopcart.id)
+        self.assertEqual(data["product_id"], item.product_id)
+        self.assertEqual(data["quantity"], item.quantity)
+        # TODO: AssertionError: 'str_subtot' != Decimal('str_subtot')
+        self.assertEqual(data["product_price"], str(item.product_price))
+        self.assertEqual(data["subtotal"], str(item.subtotal))
+
 
 ######################################################################
 #  T E S T   S A D   P A T H S
