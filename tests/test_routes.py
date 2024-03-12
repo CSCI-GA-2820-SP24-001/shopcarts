@@ -230,6 +230,49 @@ class TestShopcartService(TestCase):
         self.assertEqual(data["product_price"], str(item.product_price))
         self.assertEqual(data["subtotal"], str(item.subtotal))
 
+    def test_update_shopcart_item(self):
+        """It should Update an existing item in a Shopcart"""
+        # create a shopcart with an item to update
+        shopcart = self._create_shopcarts(1)[0]
+        # shopcart = ShopcartFactory()
+        shopcart.create()
+        item = ItemFactory(shopcart=shopcart)
+        item.create()
+        response = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+
+        # response = self.client.post(BASE_URL, json=shopcart.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.get_json()
+        logging.debug(data)
+        product_name = data["product_name"]
+        item_id = data["id"]
+        data["product_name"] = "Updated Item Name"
+
+        # send the update back
+        response = self.client.put(
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}",
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # retrieve it back
+        response = self.client.get(
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.get_json()
+        logging.debug(data)
+        self.assertEqual(data["id"], item_id)
+        self.assertNotEqual(data["product_name"], product_name)
+
 
 ######################################################################
 #  T E S T   S A D   P A T H S
