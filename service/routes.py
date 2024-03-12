@@ -231,6 +231,46 @@ def get_items(shopcart_id, item_id):
 
 
 ######################################################################
+# UPDATE AN EXISTING ITEM IN THE SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["PUT"])
+def update_shopcarts_item(shopcart_id, item_id):
+    """
+    Update an item in a Shopcart
+
+    This endpoint will update an item in a Shopcart based the body that is posted
+    """
+    app.logger.info(
+        "Request to update item with id %d in a shopcart with id: %d",
+        item_id,
+        shopcart_id,
+    )
+    check_content_type("application/json")
+
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id: '{shopcart_id}' was not found.",
+        )
+
+    item = Item.find(item_id)
+    if not item:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id: '{item_id}' was not found in shopcart with id: '{shopcart_id}'",
+        )
+
+    item.deserialize(request.get_json())
+    item.update()
+
+    app.logger.info(
+        "Item with id %d in shopcart with id %d updated.", item_id, shopcart_id
+    )
+    return jsonify(item.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
