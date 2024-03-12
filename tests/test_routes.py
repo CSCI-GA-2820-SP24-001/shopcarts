@@ -298,3 +298,9 @@ class TestSadPaths(TestCase):
         """It should not Create a Shopcart with the wrong content type"""
         response = self.client.post(BASE_URL, data="hello", content_type="text/html")
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_get_shopcart_with_method_not_allowed(self):
+        """It should not allow us to get a Shopcart with the method that is not allowed"""
+        test_shopcart = ShopcartFactory()
+        response = self.client.post(f"{BASE_URL}/{test_shopcart.id}")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
