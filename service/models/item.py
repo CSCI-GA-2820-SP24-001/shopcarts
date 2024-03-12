@@ -107,13 +107,3 @@ class Item(db.Model, PersistentBase):
     ##################################################
     # CLASS METHODS
     ##################################################
-
-    @classmethod
-    def find_by_name(cls, product_name):
-        """Returns all Items with the given product_name
-
-        Args:
-            product_name (string): the product_name of the Items you want to match
-        """
-        logger.info("Processing product_name query for %s ...", product_name)
-        return cls.query.filter(cls.product_name == product_name)
