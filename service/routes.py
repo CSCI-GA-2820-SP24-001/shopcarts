@@ -170,7 +170,7 @@ def update_shopcarts(shopcart_id):
 
 
 ######################################################################
-# ADD AN ITEM TO AN SHOPCART
+# ADD AN ITEM TO A SHOPCART
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def create_items(shopcart_id):
@@ -202,6 +202,32 @@ def create_items(shopcart_id):
     message = item.serialize()
 
     return jsonify(message), status.HTTP_201_CREATED
+
+
+######################################################################
+# RETRIEVE AN ITEM FROM A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
+def get_items(shopcart_id, item_id):
+    """
+    Get an Item
+
+    This endpoint returns just an item
+    """
+    app.logger.info(
+        "Request to retrieve Item %s for Account id: %s", (item_id, shopcart_id)
+    )
+
+    # See if the item exists and abort if it doesn't
+    # TODO: think about whether it is pulling an item from the desired shopcart only
+    item = Item.find(item_id)
+    if not item:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{item_id}' could not be found.",
+        )
+
+    return jsonify(item.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
