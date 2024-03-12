@@ -273,6 +273,31 @@ class TestShopcartService(TestCase):
         self.assertEqual(data["id"], item_id)
         self.assertNotEqual(data["product_name"], product_name)
 
+    def test_get_item_list(self):
+        """It should Get a list of items in a shopcart"""
+        # add two items to the shopcart
+        shopcart = self._create_shopcarts(1)[0]
+        item_list = ItemFactory.create_batch(2)
+
+        # create item 1
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items", json=item_list[0].serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Create item 2
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items", json=item_list[1].serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # get the list back and make sure there are 2
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+
 
 ######################################################################
 #  T E S T   S A D   P A T H S
