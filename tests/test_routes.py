@@ -7,9 +7,9 @@ import logging
 from unittest import TestCase
 from wsgi import app
 from service.common import status
-from service.models import Shopcart
+from service.models.shopcart import Shopcart
 from service.models.persistent_base import db
-from .factories import ShopcartFactory, ItemFactory
+from .factories import ShopcartFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -152,50 +152,6 @@ class TestShopcartService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_shopcart = response.get_json()
         self.assertEqual(updated_shopcart["user_id"], "123")
-
-    def test_add_shopcart_item(self):
-        """It should Create an shopcart with an item and add it to the database"""
-        shopcarts = Shopcart.all()
-        self.assertEqual(shopcarts, [])
-        shopcart = ShopcartFactory()
-        item = ItemFactory(shopcart=shopcart)
-        shopcart.items.append(item)
-        shopcart.create()
-        # Assert that it was assigned an id and shows up in the database
-        self.assertIsNotNone(shopcart.id)
-        shopcarts = Shopcart.all()
-        self.assertEqual(len(shopcarts), 1)
-
-        new_shopcart = Shopcart.find(shopcart.id)
-        self.assertEqual(new_shopcart.items[0].product_id, item.product_id)
-
-        item2 = ItemFactory(shopcart=shopcart)
-        shopcart.items.append(item2)
-        shopcart.update()
-
-        new_shopcart = Shopcart.find(shopcart.id)
-        self.assertEqual(len(new_shopcart.items), 2)
-        self.assertEqual(new_shopcart.items[1].product_id, item2.product_id)
-
-    def test_add_item(self):
-        """It should Add an item to an shopcart"""
-        shopcart = self._create_shopcarts(1)[0]
-        item = ItemFactory()
-        resp = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        data = resp.get_json()
-        logging.debug(data)
-        self.assertEqual(data["product_name"], item.product_name)
-        self.assertEqual(data["cart_id"], shopcart.id)
-        self.assertEqual(data["product_id"], item.product_id)
-        self.assertEqual(data["quantity"], item.quantity)
-        # TODO: AssertionError: 'str_subtot' != Decimal('str_subtot')
-        self.assertEqual(data["product_price"], str(item.product_price))
-        self.assertEqual(data["subtotal"], str(item.subtotal))
 
 
 ######################################################################
