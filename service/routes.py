@@ -271,6 +271,28 @@ def update_shopcarts_item(shopcart_id, item_id):
 
 
 ######################################################################
+# LIST ITEMS IN A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
+def list_items(shopcart_id):
+    """Returns all of the Items for a Shopcart"""
+    app.logger.info("Request for all Items for Shopcart with id: %s", shopcart_id)
+
+    # See if the shopcart exists and abort if it doesn't
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id '{shopcart_id}' could not be found.",
+        )
+
+    # Get the items for the shopcart
+    results = [item.serialize() for item in shopcart.items]
+
+    return jsonify(results), status.HTTP_200_OK
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
