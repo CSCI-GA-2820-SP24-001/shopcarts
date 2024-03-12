@@ -124,36 +124,53 @@ class TestShopcarts(TestCase):
         shopcarts = Shopcart.all()
         self.assertEqual(len(shopcarts), 5)
 
-    def test_shopcart_serialization(self):
-        """It should properly serialize the shopcart."""
-        resource = ShopcartFactory(
-            id=21,
-            user_id="101",
-        )
+    def test_serialize_a_shopcart(self):
+        """It should Serialize a shopcart"""
+        shopcart = ShopcartFactory()
+        item = ItemFactory()
+        shopcart.items.append(item)
+        serial_shopcart = shopcart.serialize()
+        self.assertEqual(serial_shopcart["id"], shopcart.id)
+        self.assertEqual(serial_shopcart["user_id"], shopcart.user_id)
+        self.assertEqual(serial_shopcart["total_price"], shopcart.total_price)
+        self.assertEqual(len(serial_shopcart["items"]), 1)
+        items = serial_shopcart["items"]
+        self.assertEqual(items[0]["id"], item.id)
+        self.assertEqual(items[0]["cart_id"], item.cart_id)
+        self.assertEqual(items[0]["product_id"], item.product_id)
+        self.assertEqual(items[0]["product_price"], item.product_price)
+        self.assertEqual(items[0]["quantity"], item.quantity)
+        self.assertEqual(items[0]["subtotal"], item.subtotal)
 
-        dictionary_data = resource.serialize()
-        ground_truth_data = {
-            "id": 21,
-            "user_id": "101",
-            "creation_date": None,
-            "last_updated": None,
-            "total_price": 0,
-            "items": [],
-        }
-        self.assertDictEqual(dictionary_data, ground_truth_data)
+    def test_deserialize_a_shopcart(self):
+        """It should Deserialize a shopcart"""
+        shopcart = ShopcartFactory()
+        item = ItemFactory(shopcart=shopcart)
+        shopcart.items.append(item)
+        shopcart.create()
 
-    def test_shopcart_deserialization(self):
-        """It should be deserializing the shopcart properly."""
-        data_to_deserialize = {
-            "id": 21,
-            "user_id": "101",
-            "items": [],
-        }
+        serial_shopcart = shopcart.serialize()
+        new_shopcart = Shopcart()
+        new_shopcart.deserialize(serial_shopcart)
+        self.assertEqual(new_shopcart.user_id, shopcart.user_id)
+        self.assertEqual(len(new_shopcart.items), 1)
+
+        new_item = new_shopcart.items[0]
+        self.assertEqual(new_item.cart_id, item.cart_id)
+        self.assertEqual(new_item.product_id, item.product_id)
+        self.assertEqual(new_item.product_price, item.product_price)
+        self.assertEqual(new_item.quantity, item.quantity)
+        self.assertEqual(new_item.subtotal, item.subtotal)
+
+    def test_deserialize_with_key_error(self):
+        """It should not Deserialize an shopcart with a KeyError"""
         shopcart = Shopcart()
-        deserialized_shopcart = shopcart.deserialize(data_to_deserialize)
+        self.assertRaises(DataValidationError, shopcart.deserialize, {})
 
-        self.assertEqual(deserialized_shopcart.user_id, "101")
-        self.assertEqual(deserialized_shopcart.items, [])
+    def test_deserialize_with_type_error(self):
+        """It should not Deserialize an shopcart with a TypeError"""
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.deserialize, [])
 
     def test_add_items_to_shopcart(self):
         """It should add items to the shopcart and update the total_price."""
@@ -163,6 +180,16 @@ class TestShopcarts(TestCase):
         item.create()
         self.assertEqual(len(shopcart.items), 1)
         self.assertNotEqual(shopcart.total_price, 0)
+
+    def test_find_by_user_id(self):
+        """It should Find an Shopcart by user_id"""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+
+        # Fetch it back by user_id
+        same_shopcart = Shopcart.find_by_user_id(shopcart.user_id)[0]
+        self.assertEqual(same_shopcart.id, shopcart.id)
+        self.assertEqual(same_shopcart.user_id, shopcart.user_id)
 
 
 class TestItems(TestCase):
@@ -301,36 +328,15 @@ class TestItems(TestCase):
         except TypeError:
             self.assertTrue(True)
 
+    def test_deserialize_item_key_error(self):
+        """It should not Deserialize an item with a KeyError"""
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, {})
 
-class TestPersistentBase(TestCase):
-    """Test Cases for PersistentBase Model"""
-
-    @classmethod
-    def setUpClass(cls):
-        """This runs once before the entire test suite"""
-        app.config["TESTING"] = True
-        app.config["DEBUG"] = False
-        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
-        app.logger.setLevel(logging.CRITICAL)
-        app.app_context().push()
-
-    @classmethod
-    def tearDownClass(cls):
-        """This runs once after the entire test suite"""
-        db.session.close()
-
-    def setUp(self):
-        """This runs before each test"""
-        db.session.query(Item).delete()  # clean up the last tests
-        db.session.commit()
-
-    def tearDown(self):
-        """This runs after each test"""
-        db.session.remove()
-
-    ######################################################################
-    #  T E S T   C A S E S
-    ######################################################################
+    def test_deserialize_item_type_error(self):
+        """It should not Deserialize an item with a TypeError"""
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, [])
 
 
 ######################################################################
@@ -370,10 +376,11 @@ class TestShopcartExceptionHandlers(TestCase):
         self.assertRaises(DataValidationError, shopcart.create)
 
     @patch("service.models.db.session.commit")
-    def test_update_exception(self, exception_mock):
-        """It should catch a update exception"""
+    def test_update_shopcart_failed(self, exception_mock):
+        # TODO: this one should be triggering persistent_base.py lines 75-78, but isn't
+        """It should not update an Shopcart on database error"""
         exception_mock.side_effect = Exception()
-        shopcart = Shopcart()
+        shopcart = ShopcartFactory()
         self.assertRaises(DataValidationError, shopcart.update)
 
     @patch("service.models.db.session.commit")
