@@ -7,7 +7,6 @@ import logging
 from unittest import TestCase
 from unittest.mock import patch
 from wsgi import app
-from datetime import datetime, date
 from service.models import DataValidationError, db, Shopcart, Item
 from .factories import ShopcartFactory, ItemFactory
 

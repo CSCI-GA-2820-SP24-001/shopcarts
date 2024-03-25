@@ -5,7 +5,7 @@ All of the models are stored in this module
 """
 
 import logging
-from datetime import datetime, date
+from datetime import datetime
 from .persistent_base import db, PersistentBase, DataValidationError
 from .item import Item
 
