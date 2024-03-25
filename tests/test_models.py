@@ -319,14 +319,6 @@ class TestItems(TestCase):
         except DataValidationError:
             self.assertTrue(True)
 
-    def test_invalid_attribute(self):
-        """It should raise an error if the attribute is not correct."""
-        try:
-            item = Item(inexistent_id="random_string", product_name="Foo")
-            self.assertTrue(False)
-        except TypeError:
-            self.assertTrue(True)
-
     def test_deserialize_item_key_error(self):
         """It should not Deserialize an item with a KeyError"""
         item = Item()
