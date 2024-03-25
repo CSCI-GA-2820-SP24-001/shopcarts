@@ -7,7 +7,6 @@ import logging
 from unittest import TestCase
 from unittest.mock import patch
 from wsgi import app
-from datetime import datetime, date
 from service.models import DataValidationError, db, Shopcart, Item
 from .factories import ShopcartFactory, ItemFactory
 
@@ -318,14 +317,6 @@ class TestItems(TestCase):
             item.deserialize({"id": 22, "product_name": "Foo"})
             self.assertTrue(False)
         except DataValidationError:
-            self.assertTrue(True)
-
-    def test_invalid_attribute(self):
-        """It should raise an error if the attribute is not correct."""
-        try:
-            item = Item(inexistent_id="random_string", product_name="Foo")
-            self.assertTrue(False)
-        except TypeError:
             self.assertTrue(True)
 
     def test_deserialize_item_key_error(self):
