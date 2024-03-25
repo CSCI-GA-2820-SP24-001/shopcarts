@@ -65,9 +65,7 @@ def create_shopcarts():
     shopcart.deserialize(request.get_json())
     shopcart.create()
     message = shopcart.serialize()
-    # Todo: uncomment this code when get_shopcarts is implemented
-    # location_url = url_for("get_shopcarts", shopcart_id=shopcart.id, _external=True)
-    location_url = "unknown"
+    location_url = url_for("get_shopcarts", shopcart_id=shopcart.id, _external=True)
 
     app.logger.info("Shopcart with ID: %d created.", shopcart.id)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
@@ -115,6 +113,7 @@ def delete_shopcarts(shopcart_id):
     app.logger.info("Shopcart with ID: %d delete complete.", shopcart_id)
     return "", status.HTTP_204_NO_CONTENT
 
+
 ######################################################################
 # DELETE AN ITEM
 ######################################################################
@@ -134,6 +133,7 @@ def delete_items(shopcart_id, item_id):
     if item:
         item.delete()
     return "", status.HTTP_204_NO_CONTENT
+
 
 ######################################################################
 # LIST ALL SHOPCARTS
