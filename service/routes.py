@@ -238,7 +238,6 @@ def get_items(shopcart_id, item_id):
     )
 
     # See if the item exists and abort if it doesn't
-    # TODO: think about whether it is pulling an item from the desired shopcart only
     item = Item.find(item_id)
     if not item:
         abort(

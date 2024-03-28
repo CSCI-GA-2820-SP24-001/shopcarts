@@ -27,6 +27,7 @@ class TestShopcartService(TestCase):
     @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
+        # pylint: disable=R0801
         app.config["TESTING"] = True
         app.config["DEBUG"] = False
         # Set up the test database
@@ -89,16 +90,12 @@ class TestShopcartService(TestCase):
         new_shopcart = response.get_json()
         self.assertEqual(new_shopcart["user_id"], test_shopcart.user_id)
         self.assertEqual(new_shopcart["items"], test_shopcart.items)
-        # self.assertEqual(new_shopcart["creation_date"], test_shopcart.creation_date) # will not be testing for this
-        # self.assertEqual(new_shopcart["last_updated"], test_shopcart.last_updated) # will not be testing for this
 
-        # Todo: Uncomment this code when get_shopcarts is implemented
-        # Check that the location header was correct
-        # response = self.client.get(location)
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # new_shopcart = response.get_json()
-        # self.assertEqual(new_shopcart["user_id"], test_shopcart.user_id)
-        # self.assertEqual(new_shopcart["items"], test_shopcart.items)
+        response = self.client.get(location)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        new_shopcart = response.get_json()
+        self.assertEqual(new_shopcart["user_id"], test_shopcart.user_id)
+        self.assertEqual(new_shopcart["items"], test_shopcart.items)
 
     def test_get_shopcart(self):
         """It should Get a single Shopcart"""
@@ -193,7 +190,6 @@ class TestShopcartService(TestCase):
         self.assertEqual(data["cart_id"], shopcart.id)
         self.assertEqual(data["product_id"], item.product_id)
         self.assertEqual(data["quantity"], item.quantity)
-        # TODO: AssertionError: 'str_subtot' != Decimal('str_subtot')
         self.assertEqual(data["product_price"], str(item.product_price))
         self.assertEqual(data["subtotal"], str(item.subtotal))
 
@@ -226,7 +222,6 @@ class TestShopcartService(TestCase):
         self.assertEqual(data["cart_id"], shopcart.id)
         self.assertEqual(data["product_id"], item.product_id)
         self.assertEqual(data["quantity"], item.quantity)
-        # TODO: AssertionError: 'str_subtot' != Decimal('str_subtot')
         self.assertEqual(data["product_price"], str(item.product_price))
         self.assertEqual(data["subtotal"], str(item.subtotal))
 

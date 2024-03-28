@@ -25,6 +25,7 @@ class TestShopcarts(TestCase):
     @classmethod
     def setUpClass(cls):
         """This runs once before the entire test suite"""
+        # pylint: disable=R0801
         app.config["TESTING"] = True
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
@@ -247,22 +248,24 @@ class TestItems(TestCase):
         item = ItemFactory()
         try:
             item.product_price = None
-            self.assertTrue(False)
         except DataValidationError:
-            self.assertTrue(True)
+            pass
+        self.assertIsNotNone(item.product_price)
 
     def test_quantity_is_none(self):
         """It should not set the quantity to None"""
         item = ItemFactory()
         try:
             item.quantity = None
-            self.assertTrue(False)
         except DataValidationError:
-            self.assertTrue(True)
+            pass
+        self.assertIsNotNone(item.quantity)
 
     def test_repr_item(self):
         """It should be returning the representation of an item."""
-        item = Item(product_name="Foo", id=22)
+        item = Item()
+        item.id = 22
+        item.product_name = "Foo"
         self.assertEqual("<Item Foo with id=[22]>", str(item))
 
     def test_serialize_item(self):
@@ -313,11 +316,11 @@ class TestItems(TestCase):
     def test_deserialize_errors(self):
         """It should raise an error if the data is not correct."""
         item = Item()
-        try:
-            item.deserialize({"id": 22, "product_name": "Foo"})
-            self.assertTrue(False)
-        except DataValidationError:
-            self.assertTrue(True)
+        item.id = 22
+        item.product_name = "Foo"
+        self.assertRaises(
+            DataValidationError, item.deserialize, {"id": 22, "product_name": "Foo"}
+        )
 
     def test_deserialize_item_key_error(self):
         """It should not Deserialize an item with a KeyError"""
@@ -368,7 +371,6 @@ class TestShopcartExceptionHandlers(TestCase):
 
     @patch("service.models.db.session.commit")
     def test_update_shopcart_failed(self, exception_mock):
-        # TODO: this one should be triggering persistent_base.py lines 75-78, but isn't
         """It should not update an Shopcart on database error"""
         exception_mock.side_effect = Exception()
         shopcart = ShopcartFactory()
