@@ -11,6 +11,7 @@ from .persistent_base import db, PersistentBase, DataValidationError
 logger = logging.getLogger("flask.app")
 
 
+# pylint: disable=too-many-instance-attributes
 class Item(db.Model, PersistentBase):
     """
     Class that represents an item in the shopcart.

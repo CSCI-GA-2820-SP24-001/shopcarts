@@ -4,7 +4,6 @@ Test Factory to make fake objects for testing
 
 import factory
 from factory.fuzzy import FuzzyChoice, FuzzyInteger, FuzzyDecimal
-from datetime import date
 from service.models.shopcart import Shopcart
 from service.models.item import Item
 
