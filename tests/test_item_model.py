@@ -153,6 +153,42 @@ class TestItems(TestCase):
         item = Item()
         self.assertRaises(DataValidationError, item.deserialize, [])
 
+    def test_list_items_in_the_shopcart(self):
+        """It should be filtering and listing items in the shopcart."""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+
+        item1 = ItemFactory(shopcart=shopcart)
+        item1.create()
+
+        item2 = ItemFactory(shopcart=shopcart)
+        item2.create()
+
+        items = Item.all()
+        for item in items:
+            self.assertEqual(item.cart_id, shopcart.id)
+
+        # If the randomizer generated two different product_IDs for the items, we take item1
+        if item1.product_id != item2.product_id:
+            product_id = item1.product_id
+            quantity = item1.quantity
+        # If the randomizer generated the same product_ID for the items, we take any of the product_IDs
+        else:
+            product_id = item2.product_id
+            quantity = item2.quantity
+
+        for item in Item.find_by_product_id(product_id):
+            self.assertEqual(item.product_id, product_id)
+
+        for item in Item.find_by_quantity(quantity):
+            self.assertEqual(item.quantity, quantity)
+
+        for item in Item.find_by_product_id_and_quantity(product_id, quantity):
+            self.assertEqual(item.quantity, quantity)
+            self.assertEqual(item.product_id, product_id)
+
+        self.assertEqual(len(items), 2)
+
 
 ######################################################################
 #  T E S T   I T E M S   E X C E P T I O N   H A N D L E R S
