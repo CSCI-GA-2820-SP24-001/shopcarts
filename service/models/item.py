@@ -108,3 +108,47 @@ class Item(db.Model, PersistentBase):
     ##################################################
     # CLASS METHODS
     ##################################################
+    @classmethod
+    def all(cls) -> list:
+        """Returns all of the Items in the database"""
+        logger.info("Processing all Items and returning them as a list ...")
+        return cls.query.all()
+
+    @classmethod
+    def find_by_product_id(cls, product_id) -> list:
+        """Returns all Items in the Shopcart associated with the given product_id
+
+        Args:
+            product_id (int): the product_id of the Items you want to match belongs to
+        """
+        logger.info(
+            "Processing items query for the product with an ID: %s ...", product_id
+        )
+        return cls.query.filter(cls.product_id == product_id)
+
+    @classmethod
+    def find_by_quantity(cls, quantity) -> list:
+        """Returns all Items in the Shopcart associated with the given quantity
+
+        Args:
+            quantity (int): the quantity of the Items you want to match belongs to
+        """
+        logger.info("Processing items query which have a quantity of: %s ...", quantity)
+        # pylint: disable=W0143
+        return cls.query.filter(cls.quantity == quantity)
+
+    @classmethod
+    def find_by_product_id_and_quantity(cls, product_id, quantity) -> list:
+        """Returns all Items in the Shopcart associated with the given product_id and quantity
+
+        Args:
+            product_id (int): the product_id of the Items you want to match belongs to
+            quantity (int): the quantity of the Items you want to match belongs to
+        """
+        logger.info(
+            "Processing items query for the product with an ID: %s and quantity: %s ...",
+            product_id,
+            quantity,
+        )
+        # pylint: disable=W0143
+        return cls.query.filter(cls.product_id == product_id, cls.quantity == quantity)
