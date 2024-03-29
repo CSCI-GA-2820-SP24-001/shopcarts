@@ -134,8 +134,7 @@ class Item(db.Model, PersistentBase):
             quantity (int): the quantity of the Items you want to match belongs to
         """
         logger.info("Processing items query which have a quantity of: %s ...", quantity)
-        # pylint: disable=W0143
-        return cls.query.filter(cls.quantity == quantity)
+        return cls.query.filter(cls._quantity == quantity)
 
     @classmethod
     def find_by_product_id_and_quantity(cls, product_id, quantity) -> list:
@@ -150,5 +149,4 @@ class Item(db.Model, PersistentBase):
             product_id,
             quantity,
         )
-        # pylint: disable=W0143
-        return cls.query.filter(cls.product_id == product_id, cls.quantity == quantity)
+        return cls.query.filter(cls.product_id == product_id, cls._quantity == quantity)
