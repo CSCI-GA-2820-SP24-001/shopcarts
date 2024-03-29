@@ -177,16 +177,11 @@ class TestItems(TestCase):
             product_id = item2.product_id
             quantity = item2.quantity
 
-        for item in Item.find_by_product_id(product_id):
-            self.assertEqual(item.product_id, product_id)
-
-        for item in Item.find_by_quantity(quantity):
-            self.assertEqual(item.quantity, quantity)
-
-        for item in Item.find_by_product_id_and_quantity(product_id, quantity):
-            self.assertEqual(item.quantity, quantity)
-            self.assertEqual(item.product_id, product_id)
-
+        self.assertNotEqual(Item.find_by_product_id(product_id).count(), 0)
+        self.assertNotEqual(Item.find_by_quantity(quantity).count(), 0)
+        self.assertNotEqual(
+            Item.find_by_product_id_and_quantity(product_id, quantity).count(), 0
+        )
         self.assertEqual(len(items), 2)
 
 

@@ -266,28 +266,41 @@ class TestShopcartService(TestCase):
 
     def test_get_item_list(self):
         """It should Get a list of items in a shopcart"""
-        # add two items to the shopcart
+        # add four items to the shopcart
         shopcart = self._create_shopcarts(1)[0]
-        item_list = ItemFactory.create_batch(2)
+        item_list = ItemFactory.create_batch(4)
 
-        # create item 1
-        resp = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items", json=item_list[0].serialize()
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        # create items
+        for item in item_list:
+            resp = self.client.post(
+                f"{BASE_URL}/{shopcart.id}/items", json=item.serialize()
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # Create item 2
-        resp = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items", json=item_list[1].serialize()
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-
-        # get the list back and make sure there are 2
         resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         data = resp.get_json()
-        self.assertEqual(len(data), 2)
+        self.assertEqual(len(data), 4)
+
+        product_id = data[0]["product_id"]
+        quantity = data[0]["quantity"]
+
+        resp = self.client.get(
+            f"{BASE_URL}/{shopcart.id}/items?product_id={product_id}"
+        )
+        data = resp.get_json()
+        self.assertNotEqual(len(data), 0)
+
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items?quantity={quantity}")
+        data = resp.get_json()
+        self.assertNotEqual(len(data), 0)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{shopcart.id}/items?product_id={product_id}&quantity={quantity}"
+        )
+        data = resp.get_json()
+        self.assertNotEqual(len(data), 0)
 
 
 ######################################################################
@@ -328,3 +341,11 @@ class TestSadPaths(TestCase):
         test_shopcart = ShopcartFactory()
         response = self.client.post(f"{BASE_URL}/{test_shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_get_items_when_shopcart_not_found(self):
+        """It should not Get any items from a shopcart that's not found"""
+        response = self.client.get(f"{BASE_URL}/-1/items")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
