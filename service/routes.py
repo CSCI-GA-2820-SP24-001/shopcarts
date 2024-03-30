@@ -293,7 +293,7 @@ def update_shopcarts_item(shopcart_id, item_id):
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
 def list_items(shopcart_id):
-    """Returns all of the Items for a Shopcart"""
+    """Returns all of the Items (and filters them if necessary) for a Shopcart"""
     app.logger.info("Request for all Items for Shopcart with id: %s", shopcart_id)
 
     # See if the shopcart exists and abort if it doesn't
@@ -304,8 +304,26 @@ def list_items(shopcart_id):
             f"Account with id '{shopcart_id}' could not be found.",
         )
 
+    # See if any query filters were passed in
+    product_id = request.args.get("product_id")
+    quantity = request.args.get("quantity")
+    if product_id and quantity is None:
+        app.logger.info("Filtering items by the product_id")
+        filtered_items = Item.find_by_product_id(int(product_id))
+    elif quantity and product_id is None:
+        app.logger.info("Filtering items by the quantity")
+        filtered_items = Item.find_by_quantity(int(quantity))
+    elif product_id and quantity:
+        app.logger.info("Filtering items by the product_id and quantity")
+        filtered_items = Item.find_by_product_id_and_quantity(
+            int(product_id), int(quantity)
+        )
+    else:
+        app.logger.info("Requesting all the items")
+        filtered_items = Item.all()
+
     # Get the items for the shopcart
-    results = [item.serialize() for item in shopcart.items]
+    results = [item.serialize() for item in filtered_items]
 
     return jsonify(results), status.HTTP_200_OK
 
