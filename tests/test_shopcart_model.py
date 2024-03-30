@@ -191,6 +191,24 @@ class TestShopcarts(TestCase):
         self.assertEqual(same_shopcart.id, shopcart.id)
         self.assertEqual(same_shopcart.user_id, shopcart.user_id)
 
+    def test_find_by_total_price(self):
+        """It should Find a Shopcart by total price"""
+        shopcarts = ShopcartFactory.create_batch(10)
+        for shopcart in shopcarts:
+            shopcart.create()
+        _total_price = shopcarts[0]._total_price
+        count = len(
+            [
+                shopcart
+                for shopcart in shopcarts
+                if shopcart._total_price == _total_price
+            ]
+        )
+        found = Shopcart.find_by_total_price(_total_price)
+        self.assertEqual(found.count(), count)
+        for shopcart in found:
+            self.assertEqual(shopcart._total_price, _total_price)
+
 
 ######################################################################
 #  T E S T   S H O P C A R T S   E X C E P T I O N   H A N D L E R S
