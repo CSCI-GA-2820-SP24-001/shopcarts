@@ -148,6 +148,7 @@ def list_shopcarts():
     # See if any query filters were passed in
     _total_price = request.args.get("total_price")
     if _total_price:
+        _total_price = float(_total_price)
         shopcarts = Shopcart.find_by_total_price(_total_price)
     else:
         shopcarts = Shopcart.all()
