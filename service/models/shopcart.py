@@ -101,3 +101,17 @@ class Shopcart(db.Model, PersistentBase):
         """
         logger.info("Processing carts query for the user with id: %s ...", user_id)
         return cls.query.filter(cls.user_id == user_id)
+
+    @classmethod
+    def find_by_total_price(cls, _total_price: str) -> list:
+        """Returns all Shopcarts with the given _total_price
+
+        :param _total_price: the total_price of the Shopcart you want to match
+        :type name: str
+
+        :return: a collection of Shopcarts with that total_price
+        :rtype: list
+
+        """
+        logger.info("Processing total_price query for %s ...", _total_price)
+        return cls.query.filter(cls._total_price == _total_price)
