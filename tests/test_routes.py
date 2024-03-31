@@ -302,6 +302,30 @@ class TestShopcartService(TestCase):
         data = resp.get_json()
         self.assertNotEqual(len(data), 0)
 
+    def test_clear_shopcart(self):
+        """Test clearing all items in a shopcart"""
+        # Create a shopcart with items
+        shopcart = self._create_shopcarts(1)[0]
+        item = ItemFactory()
+
+        # Add item to shopcart
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Send request to clear shopcart
+        resp = self.client.delete(
+            f"{BASE_URL}/{shopcart.id}/clear",
+            content_type="application/json",
+        )
+
+        # Check response status code
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(resp.data, b"")
+
 
 ######################################################################
 #  T E S T   S A D   P A T H S
