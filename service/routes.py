@@ -343,7 +343,10 @@ def clear_shopcart(shopcart_id):
 
     # If shopcart does not exist, return a 404 Not Found error
     if not shopcart:
-        return jsonify({"error": "Shopcart not found"}), status.HTTP_404_NOT_FOUND
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' was not found.",
+        )
 
     # Delete all items in the shopcart
     for item in shopcart.items:

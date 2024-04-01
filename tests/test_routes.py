@@ -327,6 +327,12 @@ class TestShopcartService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(resp.data, b"")
 
+        resp = self.client.delete(
+            f"{BASE_URL}/-1/clear",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_query_shopcart_list_by_total_price(self):
         """It should Query Shopcarts by total price"""
         shopcarts = self._create_shopcarts(10)
