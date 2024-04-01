@@ -297,12 +297,6 @@ class TestShopcartService(TestCase):
         data = resp.get_json()
         self.assertNotEqual(len(data), 0)
 
-        resp = self.client.get(
-            f"{BASE_URL}/{shopcart.id}/items?product_id={product_id}&quantity={quantity}"
-        )
-        data = resp.get_json()
-        self.assertNotEqual(len(data), 0)
-
     def test_query_shopcart_list_by_total_price(self):
         """It should Query Shopcarts by total price"""
         shopcarts = self._create_shopcarts(10)

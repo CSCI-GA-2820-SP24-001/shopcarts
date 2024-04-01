@@ -179,9 +179,6 @@ class TestItems(TestCase):
 
         self.assertNotEqual(Item.find_by_product_id(product_id).count(), 0)
         self.assertNotEqual(Item.find_by_quantity(quantity).count(), 0)
-        self.assertNotEqual(
-            Item.find_by_product_id_and_quantity(product_id, quantity).count(), 0
-        )
         self.assertEqual(len(items), 2)
 
 
