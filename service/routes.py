@@ -350,6 +350,48 @@ def clear_shopcart(shopcart_id):
     return shopcart.serialize(), status.HTTP_204_NO_CONTENT
 
 
+@app.route(
+    "/shopcarts/<int:shopcart_id>/items/<int:item_id>/increment", methods=["PUT"]
+)
+def increment_item_quantity(shopcart_id, item_id):
+    """
+    Increment the quantity of an item in a Shopcart
+
+    This endpoint will increment the quantity of an item in a Shopcart based the body that is posted
+    """
+
+    app.logger.info(
+        "Request to increment the quantity of item with id %d in a shopcart with id: %d",
+        item_id,
+        shopcart_id,
+    )
+
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id: '{shopcart_id}' was not found.",
+        )
+
+    item = Item.find(item_id)
+
+    if not item:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id: '{item_id}' was not found in shopcart with id: '{shopcart_id}'",
+        )
+
+    item._quantity += 1
+
+    item.update()
+
+    app.logger.info(
+        "Item with id %d in shopcart with id %d updated.", item_id, shopcart_id
+    )
+
+    return jsonify(item.serialize()), status.HTTP_200_OK
+
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
