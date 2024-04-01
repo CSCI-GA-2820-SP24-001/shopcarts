@@ -197,8 +197,7 @@ class TestShopcartService(TestCase):
     def test_update_shopcart_item(self):
         """It should Update an existing item in a Shopcart"""
         # create a shopcart with an item to update
-        shopcart = self._create_shopcarts(1)[0]
-        # shopcart = ShopcartFactory()
+        shopcart = ShopcartFactory()
         shopcart.create()
         item = ItemFactory(shopcart=shopcart)
         item.create()
@@ -347,6 +346,41 @@ class TestShopcartService(TestCase):
             self.assertAlmostEqual(
                 float(shopcart["total_price"]), float(test_total_price), places=2
             )
+
+    def test_increment_quantity_by_one(self):
+        """It should increment quantity by one"""
+        # add four items to the shopcart
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        item = ItemFactory(shopcart=shopcart)
+        item.create()
+        # let's commit the newly created item to the DB
+        initial_quantity = item.quantity
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items", json=item.serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # let's get the item
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        resp = self.client.put(
+            f"{BASE_URL}/{shopcart.id}/items/{item.id}/increment", json=item.serialize()
+        )
+        new_quantity = item.quantity
+        self.assertEqual(new_quantity, initial_quantity + 1)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        resp = self.client.put(
+            f"{BASE_URL}/-1/items/{item.id}/increment", json=item.serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+        resp = self.client.put(
+            f"{BASE_URL}/{shopcart.id}/items/-1/increment", json=item.serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
 
 ######################################################################
