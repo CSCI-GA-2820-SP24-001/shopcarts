@@ -327,6 +327,35 @@ def list_items(shopcart_id):
 
 
 ######################################################################
+# CLEAR ALL ITEMS IN A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/clear", methods=["DELETE"])
+def clear_shopcart(shopcart_id):
+    """
+    Clear all Items in a Shopcart
+
+    This endpoint will delete all Items in a Shopcart based on the shopcart_id specified in the path
+    """
+    app.logger.info("Request to clear all Items in Shopcart id: %s", shopcart_id)
+
+    # Find the shopcart
+    shopcart = Shopcart.find(shopcart_id)
+
+    # If shopcart does not exist, return a 404 Not Found error
+    if not shopcart:
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' was not found.",
+        )
+
+    # Delete all items in the shopcart
+    for item in shopcart.items:
+        item.delete()
+
+    return shopcart.serialize(), status.HTTP_204_NO_CONTENT
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
