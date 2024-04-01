@@ -145,15 +145,13 @@ def list_shopcarts():
 
     shopcarts = []
 
-    # # See if any query filters were passed in
-    # category = request.args.get("category")
-    # name = request.args.get("name")
-    # if category:
-    #     shopcarts = Shopcart.find_by_category(category)
-    # elif name:
-    #     shopcarts = Shopcart.find_by_name(name)
-    # else:
-    shopcarts = Shopcart.all()
+    # See if any query filters were passed in
+    _total_price = request.args.get("total_price")
+    if _total_price:
+        _total_price = float(_total_price)
+        shopcarts = Shopcart.find_by_total_price(_total_price)
+    else:
+        shopcarts = Shopcart.all()
 
     results = [shopcart.serialize() for shopcart in shopcarts]
     app.logger.info("Returning %d shopcarts", len(results))

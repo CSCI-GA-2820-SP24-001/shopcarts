@@ -11,6 +11,7 @@ from service.models import Shopcart
 from service.models.persistent_base import db
 from .factories import ShopcartFactory, ItemFactory
 
+
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
@@ -301,7 +302,7 @@ class TestShopcartService(TestCase):
         )
         data = resp.get_json()
         self.assertNotEqual(len(data), 0)
-
+    
     def test_clear_shopcart(self):
         """Test clearing all items in a shopcart"""
         # Create a shopcart with items
@@ -325,6 +326,27 @@ class TestShopcartService(TestCase):
         # Check response status code
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(resp.data, b"")
+        
+    def test_query_shopcart_list_by_total_price(self):
+        """It should Query Shopcarts by total price"""
+        shopcarts = self._create_shopcarts(10)
+        test_total_price = shopcarts[0]._total_price
+        _total_price_shopcarts = [
+            shopcart
+            for shopcart in shopcarts
+            if shopcart._total_price == test_total_price
+        ]
+        response = self.client.get(
+            BASE_URL, query_string=f"total_price={test_total_price}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(_total_price_shopcarts))
+        # check the data just to be sure
+        for shopcart in data:
+            self.assertAlmostEqual(
+                float(shopcart["total_price"]), float(test_total_price), places=2
+            )
 
 
 ######################################################################
