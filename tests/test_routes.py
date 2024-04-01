@@ -302,7 +302,7 @@ class TestShopcartService(TestCase):
         )
         data = resp.get_json()
         self.assertNotEqual(len(data), 0)
-    
+
     def test_clear_shopcart(self):
         """Test clearing all items in a shopcart"""
         # Create a shopcart with items
@@ -326,7 +326,7 @@ class TestShopcartService(TestCase):
         # Check response status code
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(resp.data, b"")
-        
+
     def test_query_shopcart_list_by_total_price(self):
         """It should Query Shopcarts by total price"""
         shopcarts = self._create_shopcarts(10)
