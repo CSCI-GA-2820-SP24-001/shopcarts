@@ -382,6 +382,41 @@ class TestShopcartService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_decrement_quantity_by_one(self):
+        """It should decrement quantity by one"""
+        # add four items to the shopcart
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        item = ItemFactory(shopcart=shopcart)
+        item.create()
+        # let's commit the newly created item to the DB
+        initial_quantity = item.quantity
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items", json=item.serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # let's get the item
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        resp = self.client.put(
+            f"{BASE_URL}/{shopcart.id}/items/{item.id}/decrement", json=item.serialize()
+        )
+        new_quantity = item.quantity
+        self.assertEqual(new_quantity, initial_quantity - 1)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        resp = self.client.put(
+            f"{BASE_URL}/-1/items/{item.id}/decrement", json=item.serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+        resp = self.client.put(
+            f"{BASE_URL}/{shopcart.id}/items/-1/decrement", json=item.serialize()
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
 
 ######################################################################
 #  T E S T   S A D   P A T H S
