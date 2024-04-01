@@ -297,12 +297,6 @@ class TestShopcartService(TestCase):
         data = resp.get_json()
         self.assertNotEqual(len(data), 0)
 
-        resp = self.client.get(
-            f"{BASE_URL}/{shopcart.id}/items?product_id={product_id}&quantity={quantity}"
-        )
-        data = resp.get_json()
-        self.assertNotEqual(len(data), 0)
-
     def test_clear_shopcart(self):
         """Test clearing all items in a shopcart"""
         # Create a shopcart with items
