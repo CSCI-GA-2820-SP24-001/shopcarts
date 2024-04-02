@@ -10,6 +10,18 @@ This is a skeleton you can use to start your projects
 
 This project contains code for `shopcarts` microservice. The `/service` folder contains your `models/` folder for our models and a `routes.py` file for the `shopcarts` service. The `/tests` folder has test cases for testing the model and the service separately. You can simply start the testing process once you clone the repository and reopen it in the container. After that is done, please run
 
+The following issues with functions descrobed have been added to the model:
+
+- Query Capability Added: Model querying for items and shopcarts, enhancing data visibility.
+- Code Refactoring: Improved code organization and readability, simplifying feature additions.
+- Item and Shopcart Querying: Feature for querying items by productID for detailed insights.
+- GitHub Actions CI Badge: CI status badge in README.md for real-time build status updates.
+- Shopcart Querying by ID: Detailed querying of shopcarts, showing items, quantities, and prices.
+- Shopcart Clear Functionality: Ability to clear all items from shopcarts in one action.
+- Filtering Fix: Resolved issues with filtering items by both product_id and quantity accurately.
+- Item Quantity Incrementation: Updated functionality for adjusting item quantities in shopcarts.
+- Item Quantity Decrease: Enabled decreasing item quantities in shopcarts for shopping needs.
+
 ```bash
 pytest
 ```
