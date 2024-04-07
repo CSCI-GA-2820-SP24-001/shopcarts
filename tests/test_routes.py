@@ -197,10 +197,9 @@ class TestShopcartService(TestCase):
     def test_update_shopcart_item(self):
         """It should Update an existing item in a Shopcart"""
         # create a shopcart with an item to update
-        shopcart = ShopcartFactory()
-        shopcart.create()
-        item = ItemFactory(shopcart=shopcart)
-        item.create()
+        # create a shopcart and an item
+        shopcart = self._create_shopcarts(1)[0]
+        item = ItemFactory()
         response = self.client.post(
             f"{BASE_URL}/{shopcart.id}/items",
             json=item.serialize(),
@@ -321,7 +320,7 @@ class TestShopcartService(TestCase):
         self.assertEqual(resp.data, b"")
 
         resp = self.client.delete(
-            f"{BASE_URL}/-1/clear",
+            f"{BASE_URL}/0/clear",
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
@@ -350,10 +349,9 @@ class TestShopcartService(TestCase):
     def test_increment_quantity_by_one(self):
         """It should increment quantity by one"""
         # add four items to the shopcart
-        shopcart = ShopcartFactory()
-        shopcart.create()
-        item = ItemFactory(shopcart=shopcart)
-        item.create()
+        # create a shopcart and an item
+        shopcart = self._create_shopcarts(1)[0]
+        item = ItemFactory()
         # let's commit the newly created item to the DB
         initial_quantity = item.quantity
         resp = self.client.post(
@@ -361,34 +359,33 @@ class TestShopcartService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # let's get the item
-        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.json
+        item_id = data["id"]
 
         resp = self.client.put(
-            f"{BASE_URL}/{shopcart.id}/items/{item.id}/increment", json=item.serialize()
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}/increment", json=item.serialize()
         )
-        new_quantity = item.quantity
-        self.assertEqual(new_quantity, initial_quantity + 1)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.json
+        new_quantity = data["quantity"]
+        self.assertEqual(new_quantity, initial_quantity + 1)
 
         resp = self.client.put(
-            f"{BASE_URL}/-1/items/{item.id}/increment", json=item.serialize()
+            f"{BASE_URL}/0/items/{item.id}/increment", json=item.serialize()
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
         resp = self.client.put(
-            f"{BASE_URL}/{shopcart.id}/items/-1/increment", json=item.serialize()
+            f"{BASE_URL}/{shopcart.id}/items/0/increment", json=item.serialize()
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_decrement_quantity_by_one(self):
         """It should decrement quantity by one"""
         # add four items to the shopcart
-        shopcart = ShopcartFactory()
-        shopcart.create()
-        item = ItemFactory(shopcart=shopcart)
-        item.create()
+        # create a shopcart and an item
+        shopcart = self._create_shopcarts(1)[0]
+        item = ItemFactory()
         # let's commit the newly created item to the DB
         initial_quantity = item.quantity
         resp = self.client.post(
@@ -396,24 +393,24 @@ class TestShopcartService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # let's get the item
-        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.json
+        item_id = data["id"]
 
         resp = self.client.put(
-            f"{BASE_URL}/{shopcart.id}/items/{item.id}/decrement", json=item.serialize()
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}/decrement", json=item.serialize()
         )
-        new_quantity = item.quantity
-        self.assertEqual(new_quantity, initial_quantity - 1)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.json
+        new_quantity = data["quantity"]
+        self.assertEqual(new_quantity, initial_quantity - 1)
 
         resp = self.client.put(
-            f"{BASE_URL}/-1/items/{item.id}/decrement", json=item.serialize()
+            f"{BASE_URL}/0/items/{item.id}/decrement", json=item.serialize()
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
         resp = self.client.put(
-            f"{BASE_URL}/{shopcart.id}/items/-1/decrement", json=item.serialize()
+            f"{BASE_URL}/{shopcart.id}/items/0/decrement", json=item.serialize()
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -435,7 +432,7 @@ class TestSadPaths(TestCase):
 
     def test_get_shopcart_not_found(self):
         """It should not Get a Shopcart that's not found"""
-        response = self.client.get(f"{BASE_URL}/-1")
+        response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = response.get_json()
         logging.debug("Response data = %s", data)
@@ -459,7 +456,7 @@ class TestSadPaths(TestCase):
 
     def test_get_items_when_shopcart_not_found(self):
         """It should not Get any items from a shopcart that's not found"""
-        response = self.client.get(f"{BASE_URL}/-1/items")
+        response = self.client.get(f"{BASE_URL}/0/items")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = response.get_json()
         logging.debug("Response data = %s", data)
