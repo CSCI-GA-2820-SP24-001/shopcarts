@@ -113,11 +113,14 @@ class TestShopcartService(TestCase):
         test_shopcart = ShopcartFactory()
         response = self.client.post(BASE_URL, json=test_shopcart.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
         # update the shopcart
         new_shopcart = response.get_json()
         logging.debug(new_shopcart)
         new_shopcart["user_id"] = "123"
+        # test that we cannot update a shopcart with the shopcart id that DNE
+        response = self.client.put(f"{BASE_URL}/0", json=new_shopcart)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        # test that we can actually update the desired shopcart when needed
         response = self.client.put(
             f"{BASE_URL}/{new_shopcart['id']}", json=new_shopcart
         )
@@ -147,6 +150,14 @@ class TestShopcartService(TestCase):
         """It should Add an item to an shopcart"""
         shopcart = self._create_shopcarts(1)[0]
         item = ItemFactory()
+        # test that we cannot create an item with the shopcart id that DNE
+        resp = self.client.post(
+            f"{BASE_URL}/0/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
         resp = self.client.post(
             f"{BASE_URL}/{shopcart.id}/items",
             json=item.serialize(),
@@ -213,6 +224,24 @@ class TestShopcartService(TestCase):
         logging.debug(data)
         product_name = data["product_name"]
         item_id = data["id"]
+
+        # test for the shopcart ID being invalid
+        resp = self.client.put(
+            f"{BASE_URL}/0/items/{item_id}",
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+        dummy_item_id = item_id + 1
+        shopcart_id = shopcart.id
+        # test for the item ID being invalid
+        resp = self.client.put(
+            f"{BASE_URL}/{shopcart_id}/items/{dummy_item_id}",
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data["product_name"] = "Updated Item Name"
 
         # send the update back

@@ -190,7 +190,7 @@ def update_shopcarts(shopcart_id):
 # ADD AN ITEM TO A SHOPCART
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
-def create_items(shopcart_id):
+def create_item(shopcart_id):
     """
     Create an Item on an Shopcart
 
