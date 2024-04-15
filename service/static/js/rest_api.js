@@ -58,19 +58,16 @@ $(function () {
 
     $("#create-shopcart-btn").click(function () {
 
-        let shopcart_id = $("#shopcart_id").val();
         let shopcart_user_id = $("#shopcart_user_id").val();
-        let shopcart_creation_date = $("#shopcart_creation_date").val();
-        let shopcart_last_update_date = $("#shopcart_last_update_date").val();
-        let shopcart_items = $("#shopcart_items").val();
-        let shopcart_total_price = $("#shopcart_total_price").val();
+        // let shopcart_id = $("#shopcart_id").val();
+        // let shopcart_creation_date = $("#shopcart_creation_date").val();
+        // let shopcart_last_update_date = $("#shopcart_last_update_date").val();
+        // let shopcart_items = $("#shopcart_items").val();
+        // let shopcart_total_price = $("#shopcart_total_price").val();
 
         let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            "user_id": shopcart_user_id,
+            "items": [],
         };
 
         $("#flash_message").empty();
