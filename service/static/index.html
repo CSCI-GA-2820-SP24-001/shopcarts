@@ -54,43 +54,36 @@
               </div>
             </div>
 
-            <!-- CATEGORY -->
+            <!-- CREATION DATE -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="shopcart_category">Category:</label>
+              <label class="control-label col-sm-2" for="shopcart_creation_date">Creation date:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="shopcart_category"
-                  placeholder="Enter category for Shopcart">
+                <input type="date" class="form-control" id="shopcart_creation_date" placeholder="2020-04-01">
               </div>
             </div>
 
-            <!-- AVAILABLE -->
+            <!-- LAST UPDATE DATE -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="shopcart_available">Available:</label>
+              <label class="control-label col-sm-2" for="shopcart_last_update_date">Last update date:</label>
               <div class="col-sm-10">
-                <select class="form-control" id="shopcart_available">
-                  <option value="true" selected>True</option>
-                  <option value="false">False</option>
-                </select>
+                <input type="date" class="form-control" id="shopcart_last_update_date" placeholder="2020-04-01">
               </div>
             </div>
 
-            <!-- GENDER -->
+            <!-- ITEMS -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="shopcart_gender">Gender:</label>
+              <label class="control-label col-sm-2" for="shopcart_items">Items:</label>
               <div class="col-sm-10">
-                <select class="form-control" id="shopcart_gender">
-                  <option value="UNKNOWN" selected>Unknown</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                </select>
+                <input type="text" class="form-control" id="shopcart_items" placeholder="Enter items for Shopcart">
               </div>
             </div>
 
-            <!-- BIRTHDAY -->
+            <!-- TOTAL PRICE -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="shopcart_birthday">Birthday:</label>
+              <label class="control-label col-sm-2" for="shopcart_total price">Total price:</label>
               <div class="col-sm-10">
-                <input type="date" class="form-control" id="shopcart_birthday" placeholder="2020-04-01">
+                <input type="text" class="form-control" id="shopcart_total price"
+                  placeholder="Enter total price for Shopcart">
               </div>
             </div>
 
@@ -113,12 +106,12 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-md-1">ID</th>
-              <th class="col-md-4">Name</th>
-              <th class="col-md-4">Category</th>
-              <th class="col-md-3">Available</th>
-              <th class="col-md-3">Gender</th>
-              <th class="col-md-3">Birthday</th>
+              <th class="col-md-1">Shopcart ID</th>
+              <th class="col-md-4">User ID</th>
+              <th class="col-md-3">Creation Date</th>
+              <th class="col-md-3">Last Update</th>
+              <th class="col-md-4">Items</th>
+              <th class="col-md-3">Total price</th>
             </tr>
           </thead>
         </table>
