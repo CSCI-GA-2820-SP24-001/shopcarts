@@ -248,30 +248,13 @@ $(function () {
     // Search for a Shopcart
     // ****************************************
 
-    $("#search-btn").click(function () {
+    $("#search-shopcart-btn").click(function () {
 
-        let name = $("#shopcart_name").val();
-        let category = $("#shopcart_category").val();
-        let available = $("#shopcart_available").val() == "true";
-
+        let total_price = $("#shopcart_total_price").val();
         let queryString = ""
 
-        if (name) {
-            queryString += 'name=' + name
-        }
-        if (category) {
-            if (queryString.length > 0) {
-                queryString += '&category=' + category
-            } else {
-                queryString += 'category=' + category
-            }
-        }
-        if (available) {
-            if (queryString.length > 0) {
-                queryString += '&available=' + available
-            } else {
-                queryString += 'available=' + available
-            }
+        if (total_price) {
+            queryString += 'total_price=' + total_price
         }
 
         $("#flash_message").empty();
@@ -288,12 +271,12 @@ $(function () {
             $("#search_results").empty();
             let table = '<table class="table table-striped" cellpadding="10">'
             table += '<thead><tr>'
-            table += '<th class="col-md-2">ID</th>'
-            table += '<th class="col-md-2">Name</th>'
-            table += '<th class="col-md-2">Category</th>'
-            table += '<th class="col-md-2">Available</th>'
-            table += '<th class="col-md-2">Gender</th>'
-            table += '<th class="col-md-2">Birthday</th>'
+            table += '<th class="col-md-1">Shopcart ID</th>'
+            table += '<th class="col-md-4">User ID</th>'
+            table += '<th class="col-md-3">Creation Date</th>'
+            table += '<th class="col-md-3">Last Update</th>'
+            table += '<th class="col-md-4">Items</th>'
+            table += '<th class="col-md-3">Total price</th>'
             table += '</tr></thead><tbody>'
             let firstShopcart = "";
             for (let i = 0; i < res.length; i++) {
