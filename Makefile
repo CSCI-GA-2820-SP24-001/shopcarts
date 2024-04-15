@@ -63,16 +63,15 @@ depoy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
 	kubectl apply -f k8s/
 
-.PHONY: setup-cluster
-setup-cluster: ## Setup the cluster and deploy the service
-	$(info Destroying the cluster if any...)
-	make cluster-rm
-	$(info Creating a cluster...)
-	make cluster
+.PHONY: build-docker
+build-docker: ## Build the docker image and push it to the registry
 	$(info Building the docker image and pushing it to the registry...)
 	docker build -t shopcarts:1.0 .
 	docker tag shopcarts:1.0 cluster-registry:32000/shopcarts:1.0
 	docker push cluster-registry:32000/shopcarts:1.0
+
+.PHONY: setup-cluster
+setup-cluster: ## Setup the cluster and deploy the service
 	$(info Creating the namespace for the resource...)
 	kubectl create namespace shopcarts-dev
 	kubectl get ns
