@@ -4,27 +4,46 @@ $(function () {
     //  U T I L I T Y   F U N C T I O N S
     // ****************************************
 
-    // Updates the form with data from the response
-    function update_form_data(res) {
-        $("#shopcart_id").val(res.id);
-        $("#shopcart_name").val(res.name);
-        $("#shopcart_category").val(res.category);
-        if (res.available == true) {
-            $("#shopcart_available").val("true");
-        } else {
-            $("#shopcart_available").val("false");
-        }
-        $("#shopcart_gender").val(res.gender);
-        $("#shopcart_birthday").val(res.birthday);
+    // Updates the SHOPCARTS form with data from the response
+    function update_shopcarts_form_data(res) {
+        $("#shopcart_id").val(res.shopcart_id);
+        $("#shopcart_user_id").val(res.shopcart_user_id);
+        $("#shopcart_creation_date").val(res.shopcart_creation_date);
+        $("#shopcart_last_update_date").val(res.shopcart_last_update_date);
+        $("#shopcart_items").val(res.shopcart_items);
+        $("#shopcart_total_price").val(res.shopcart_total_price);
     }
 
-    /// Clears all form fields
-    function clear_form_data() {
-        $("#shopcart_name").val("");
-        $("#shopcart_category").val("");
-        $("#shopcart_available").val("");
-        $("#shopcart_gender").val("");
-        $("#shopcart_birthday").val("");
+    /// Clears all SHOPCART form fields
+    function clear_shopcarts_form_data() {
+        $("#shopcart_id").val("");
+        $("#shopcart_user_id").val("");
+        $("#shopcart_creation_date").val("");
+        $("#shopcart_last_update_date").val("");
+        $("#shopcart_items").val("");
+        $("#shopcart_total_price").val("");
+    }
+
+    // Updates the ITEMS form with data from the response
+    function update_items_form_data(res) {
+        $("#item_id").val(res.item_id);
+        $("#item_product_name").val(res.item_product_name);
+        $("#item_shopcart_id").val(res.item_shopcart_id);
+        $("#item_product_id").val(res.item_product_id);
+        $("#item_product_price").val(res.item_product_price);
+        $("#item_quantity").val(res.item_quantity);
+        $("#item_subtotal_price").val(res.item_subtotal_price);
+    }
+
+    /// Clears all ITEMS form fields
+    function clear_items_form_data() {
+        $("#item_id").val("");
+        $("#item_product_name").val("");
+        $("#item_shopcart_id").val("");
+        $("#item_product_id").val("");
+        $("#item_product_price").val("");
+        $("#item_quantity").val("");
+        $("#item_subtotal_price").val("");
     }
 
     // Updates the flash message area
@@ -37,13 +56,14 @@ $(function () {
     // Create a Shopcart
     // ****************************************
 
-    $("#create-btn").click(function () {
+    $("#create-shopcart-btn").click(function () {
 
-        let name = $("#shopcart_name").val();
-        let category = $("#shopcart_category").val();
-        let available = $("#shopcart_available").val() == "true";
-        let gender = $("#shopcart_gender").val();
-        let birthday = $("#shopcart_birthday").val();
+        let shopcart_id = $("#shopcart_id").val();
+        let shopcart_user_id = $("#shopcart_user_id").val();
+        let shopcart_creation_date = $("#shopcart_creation_date").val();
+        let shopcart_last_update_date = $("#shopcart_last_update_date").val();
+        let shopcart_items = $("#shopcart_items").val();
+        let shopcart_total_price = $("#shopcart_total_price").val();
 
         let data = {
             "name": name,
