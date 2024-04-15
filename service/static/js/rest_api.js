@@ -229,13 +229,19 @@ $(function () {
     });
 
     // ****************************************
-    // Clear the form
+    // Clearing our forms
     // ****************************************
 
-    $("#clear-btn").click(function () {
+    $("#clear-shopcart-btn").click(function () {
         $("#shopcart_id").val("");
         $("#flash_message").empty();
-        clear_form_data()
+        clear_shopcarts_form_data()
+    });
+
+    $("#clear-item-btn").click(function () {
+        $("#item_id").val("");
+        $("#flash_message").empty();
+        clear_items_form_data()
     });
 
     // ****************************************
