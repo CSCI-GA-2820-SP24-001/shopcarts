@@ -89,6 +89,46 @@ $(function () {
         });
     });
 
+    // ****************************************
+    // Create an Item
+    // ****************************************
+
+    $("#create-item-btn").click(function () {
+        let item_product_name = $("#item_product_name").val();
+        let item_shopcart_id = $("#item_shopcart_id").val();
+        let item_product_id = $("#item_product_id").val();
+        let item_product_price = $("#item_product_price").val();
+        let item_quantity = $("#item_quantity").val();
+        let item_subtotal_price = $("#item_subtotal_price").val();
+
+        let data = {
+            "product_name": item_product_name,
+            "cart_id": item_shopcart_id,
+            "product_id": item_product_id,
+            "product_price": item_product_price,
+            "quantity": item_quantity,
+            "subtotal": item_subtotal_price
+        }
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "POST",
+            url: `/shopcarts/${item_shopcart_id}/items`,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+
+        ajax.done(function (res) {
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            flash_message(res.responseJSON.message)
+        });
+    });
 
     // ****************************************
     // Update a Shopcart
