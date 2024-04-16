@@ -33,14 +33,7 @@ from service.models import Shopcart, Item
 def index():
     """Root URL response"""
     app.logger.info("Request for the index page to be returned.")
-    return (
-        jsonify(
-            name="Shopcart REST API Service",
-            version="1.0",
-            url=url_for("index", _external=True),
-        ),
-        status.HTTP_200_OK,
-    )
+    return app.send_static_file("index.html")
 
 
 ######################################################################
