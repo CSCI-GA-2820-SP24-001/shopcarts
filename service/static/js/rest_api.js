@@ -134,21 +134,22 @@ $(function () {
     // Update a Shopcart
     // ****************************************
 
-    $("#update-btn").click(function () {
+    $("#update-shopcart-btn").click(function () {
 
         let shopcart_id = $("#shopcart_id").val();
-        let name = $("#shopcart_name").val();
-        let category = $("#shopcart_category").val();
-        let available = $("#shopcart_available").val() == "true";
-        let gender = $("#shopcart_gender").val();
-        let birthday = $("#shopcart_birthday").val();
+        let shopcart_user_id = $("#shopcart_user_id").val();
+        let shopcart_creation_date = $("#shopcart_creation_date").val();
+        let shopcart_last_update_date = $("#shopcart_last_update_date").val();
+        let shopcart_items = $("#shopcart_items").val();
+        let shopcart_total_price = $("#shopcart_total_price").val();
 
         let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            "id": shopcart_id,
+            "user_id": shopcart_user_id,
+            "creation_date": shopcart_creation_date,
+            "last_updated": shopcart_last_update_date,
+            "total_price": shopcart_total_price,
+            "items": shopcart_items,
         };
 
         $("#flash_message").empty();
@@ -322,7 +323,7 @@ $(function () {
             let firstShopcart = "";
             for (let i = 0; i < res.length; i++) {
                 let shopcart = res[i];
-                table += `<tr id="row_${i}"><td>${shopcart.id}</td><td>${shopcart.name}</td><td>${shopcart.category}</td><td>${shopcart.available}</td><td>${shopcart.gender}</td><td>${shopcart.birthday}</td></tr>`;
+                table += `<tr id="row_${i}"><td>${shopcart.shopcart_id}</td><td>${shopcart.shopcart_user_id}</td><td>${shopcart.shopcart_creation_date}</td><td>${shopcart.shopcart_last_update_date}</td><td>${shopcart.shopcart_items}</td><td>${shopcart.shopcart_items}</td><td>${shopcart_total_price}</td></tr>`;
                 if (i == 0) {
                     firstShopcart = shopcart;
                 }
