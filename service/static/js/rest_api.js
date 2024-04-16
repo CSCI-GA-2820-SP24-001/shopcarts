@@ -80,7 +80,7 @@ $(function () {
         });
 
         ajax.done(function (res) {
-            update_form_data(res)
+            update_shopcarts_form_data(res)
             flash_message("Success")
         });
 
@@ -121,7 +121,7 @@ $(function () {
 
 
         ajax.done(function (res) {
-            update_form_data(res)
+            update_items_form_data(res)
             flash_message("Success")
         });
 
@@ -162,7 +162,7 @@ $(function () {
         })
 
         ajax.done(function (res) {
-            update_form_data(res)
+            update_shopcarts_form_data(res)
             flash_message("Success")
         });
 
@@ -202,7 +202,7 @@ $(function () {
         })
 
         ajax.done(function (res) {
-            update_form_data(res)
+            update_items_form_data(res)
             flash_message("Success")
         });
 
@@ -232,7 +232,38 @@ $(function () {
 
         ajax.done(function (res) {
             //alert(res.toSource())
-            update_form_data(res)
+            update_shopcarts_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            clear_form_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
+    // Retrieve an Item
+    // ****************************************
+
+    $("#retrieve-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let item_id = $("#item_id").val();
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function (res) {
+            //alert(res.toSource())
+            update_shopcarts_form_data(res)
             flash_message("Success")
         });
 
