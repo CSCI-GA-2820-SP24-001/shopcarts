@@ -217,7 +217,7 @@ $(function () {
     // Retrieve a Shopcart
     // ****************************************
 
-    $("#retrieve-btn").click(function () {
+    $("#retrieve-shopcart-btn").click(function () {
 
         let shopcart_id = $("#shopcart_id").val();
 
@@ -247,7 +247,7 @@ $(function () {
     // Retrieve an Item
     // ****************************************
 
-    $("#retrieve-btn").click(function () {
+    $("#retrieve-item-btn").click(function () {
 
         let shopcart_id = $("#item_shopcart_id").val();
         let item_id = $("#item_id").val();
@@ -278,7 +278,7 @@ $(function () {
     // Delete a Shopcart
     // ****************************************
 
-    $("#delete-btn").click(function () {
+    $("#delete-shopcart-btn").click(function () {
 
         let shopcart_id = $("#shopcart_id").val();
 
