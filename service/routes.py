@@ -153,10 +153,10 @@ def list_shopcarts():
     shopcarts = []
 
     # See if any query filters were passed in
-    _total_price = request.args.get("total_price")
-    if _total_price:
-        _total_price = float(_total_price)
-        shopcarts = Shopcart.find_by_total_price(_total_price)
+    user_id = request.args.get("user_id")
+    if user_id:
+        user_id = float(user_id)
+        shopcarts = Shopcart.find_by_user_id(user_id)
     else:
         shopcarts = Shopcart.all()
 
@@ -388,7 +388,7 @@ def increment_item_quantity(shopcart_id, item_id):
             f"Item with id: '{item_id}' was not found in shopcart with id: '{shopcart_id}'",
         )
 
-    item._quantity += 1
+    item.quantity += 1
 
     item.update()
 
@@ -435,7 +435,7 @@ def decrement_item_quantity(shopcart_id, item_id):
             f"Item with id: '{item_id}' was not found in shopcart with id: '{shopcart_id}'",
         )
 
-    item._quantity -= 1
+    item.quantity -= 1
 
     item.update()
 
