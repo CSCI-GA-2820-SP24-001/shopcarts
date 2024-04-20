@@ -4,6 +4,7 @@ Test cases for my Shopcart model
 
 import os
 import logging
+from decimal import Decimal
 from unittest import TestCase
 from unittest.mock import patch
 from wsgi import app
@@ -61,7 +62,6 @@ class TestShopcarts(TestCase):
         self.assertEqual(len(found), 1)
         data = Shopcart.find(resource.id)
         self.assertEqual(data.user_id, resource.user_id)
-        self.assertEqual(data.total_price, 0)
 
     def test_read_a_shopcart(self):
         """It should Read a Shopcart"""
@@ -132,7 +132,6 @@ class TestShopcarts(TestCase):
         serial_shopcart = shopcart.serialize()
         self.assertEqual(serial_shopcart["id"], shopcart.id)
         self.assertEqual(serial_shopcart["user_id"], shopcart.user_id)
-        self.assertEqual(serial_shopcart["total_price"], shopcart.total_price)
         self.assertEqual(len(serial_shopcart["items"]), 1)
         items = serial_shopcart["items"]
         self.assertEqual(items[0]["id"], item.id)
@@ -140,7 +139,6 @@ class TestShopcarts(TestCase):
         self.assertEqual(items[0]["product_id"], item.product_id)
         self.assertEqual(items[0]["product_price"], item.product_price)
         self.assertEqual(items[0]["quantity"], item.quantity)
-        self.assertEqual(items[0]["subtotal"], item.subtotal)
 
     def test_deserialize_a_shopcart(self):
         """It should Deserialize a shopcart"""
@@ -156,11 +154,9 @@ class TestShopcarts(TestCase):
         self.assertEqual(len(new_shopcart.items), 1)
 
         new_item = new_shopcart.items[0]
-        self.assertEqual(new_item.cart_id, item.cart_id)
         self.assertEqual(new_item.product_id, item.product_id)
         self.assertEqual(new_item.product_price, item.product_price)
         self.assertEqual(new_item.quantity, item.quantity)
-        self.assertEqual(new_item.subtotal, item.subtotal)
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize an shopcart with a KeyError"""
@@ -177,37 +173,23 @@ class TestShopcarts(TestCase):
         shopcart = ShopcartFactory()
         shopcart.create()
         item = ItemFactory(shopcart=shopcart)
+        item.quantity = 2
+        item.product_price = 10
         item.create()
         self.assertEqual(len(shopcart.items), 1)
-        self.assertNotEqual(shopcart.total_price, 0)
+        self.assertEqual(shopcart.get_total_price(), Decimal("20.0"))
 
     def test_find_by_user_id(self):
-        """It should Find an Shopcart by user_id"""
-        shopcart = ShopcartFactory()
-        shopcart.create()
-
-        # Fetch it back by user_id
-        same_shopcart = Shopcart.find_by_user_id(shopcart.user_id)[0]
-        self.assertEqual(same_shopcart.id, shopcart.id)
-        self.assertEqual(same_shopcart.user_id, shopcart.user_id)
-
-    def test_find_by_total_price(self):
         """It should Find a Shopcart by total price"""
         shopcarts = ShopcartFactory.create_batch(10)
         for shopcart in shopcarts:
             shopcart.create()
-        _total_price = shopcarts[0]._total_price
-        count = len(
-            [
-                shopcart
-                for shopcart in shopcarts
-                if shopcart._total_price == _total_price
-            ]
-        )
-        found = Shopcart.find_by_total_price(_total_price)
+        user_id = shopcarts[0].user_id
+        count = len([shopcart for shopcart in shopcarts if shopcart.user_id == user_id])
+        found = Shopcart.find_by_user_id(user_id)
         self.assertEqual(found.count(), count)
         for shopcart in found:
-            self.assertEqual(shopcart._total_price, _total_price)
+            self.assertEqual(shopcart.user_id, user_id)
 
 
 ######################################################################

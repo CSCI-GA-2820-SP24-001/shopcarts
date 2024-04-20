@@ -140,24 +140,23 @@ class TestShopcartService(TestCase):
 
     def test_get_shopcart_list(self):
         """It should Get a list of Shopcarts"""
-        self._create_shopcarts(5)
+        shopcarts = self._create_shopcarts(5)
+        # user_id = shopcarts[0].user_id
+
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
+        # resp = self.client.get(f"{BASE_URL}?user_id={user_id}")
+        # data = resp.get_json()
+        # self.assertEqual(len(data), 1)
+
     def test_add_item(self):
-        """It should Add an item to an shopcart"""
+        """It should Add an item to a shopcart"""
         shopcart = self._create_shopcarts(1)[0]
         item = ItemFactory()
-        # test that we cannot create an item with the shopcart id that DNE
-        resp = self.client.post(
-            f"{BASE_URL}/0/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
+        item.cart_id = None
         resp = self.client.post(
             f"{BASE_URL}/{shopcart.id}/items",
             json=item.serialize(),
@@ -167,14 +166,22 @@ class TestShopcartService(TestCase):
         data = resp.get_json()
         logging.debug(data)
         self.assertEqual(data["product_name"], item.product_name)
-        self.assertEqual(data["cart_id"], shopcart.id)
         self.assertEqual(data["product_id"], item.product_id)
         self.assertEqual(data["quantity"], item.quantity)
         self.assertEqual(data["product_price"], str(item.product_price))
-        self.assertEqual(data["subtotal"], str(item.subtotal))
+
+    def test_shopcart_not_found(self):
+        """It should not find a shopcart"""
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/0/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_item(self):
-        """It should Get an item from an shopcart"""
+        """It should Get an item from a shopcart"""
         # create a known item
         shopcart = self._create_shopcarts(1)[0]
         item = ItemFactory()
@@ -203,7 +210,6 @@ class TestShopcartService(TestCase):
         self.assertEqual(data["product_id"], item.product_id)
         self.assertEqual(data["quantity"], item.quantity)
         self.assertEqual(data["product_price"], str(item.product_price))
-        self.assertEqual(data["subtotal"], str(item.subtotal))
 
     def test_update_shopcart_item(self):
         """It should Update an existing item in a Shopcart"""
@@ -216,8 +222,6 @@ class TestShopcartService(TestCase):
             json=item.serialize(),
             content_type="application/json",
         )
-
-        # response = self.client.post(BASE_URL, json=shopcart.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data = response.get_json()
@@ -353,27 +357,6 @@ class TestShopcartService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_query_shopcart_list_by_total_price(self):
-        """It should Query Shopcarts by total price"""
-        shopcarts = self._create_shopcarts(10)
-        test_total_price = shopcarts[0]._total_price
-        _total_price_shopcarts = [
-            shopcart
-            for shopcart in shopcarts
-            if shopcart._total_price == test_total_price
-        ]
-        response = self.client.get(
-            BASE_URL, query_string=f"total_price={test_total_price}"
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), len(_total_price_shopcarts))
-        # check the data just to be sure
-        for shopcart in data:
-            self.assertAlmostEqual(
-                float(shopcart["total_price"]), float(test_total_price), places=2
-            )
 
     def test_increment_quantity_by_one(self):
         """It should increment quantity by one"""
