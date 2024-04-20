@@ -59,11 +59,6 @@ $(function () {
     $("#create-shopcart-btn").click(function () {
 
         let shopcart_user_id = $("#shopcart_user_id").val();
-        // let shopcart_id = $("#shopcart_id").val();
-        // let shopcart_creation_date = $("#shopcart_creation_date").val();
-        // let shopcart_last_update_date = $("#shopcart_last_update_date").val();
-        // let shopcart_items = $("#shopcart_items").val();
-        // let shopcart_total_price = $("#shopcart_total_price").val();
 
         let data = {
             "user_id": shopcart_user_id,
@@ -233,11 +228,12 @@ $(function () {
         ajax.done(function (res) {
             //alert(res.toSource())
             update_shopcarts_form_data(res)
+            // TODO: figure out what is wrong with the user id and why is it not getting displayed
             flash_message("Success")
         });
 
         ajax.fail(function (res) {
-            clear_form_data()
+            clear_shopcarts_form_data()
             flash_message(res.responseJSON.message)
         });
 
@@ -268,7 +264,7 @@ $(function () {
         });
 
         ajax.fail(function (res) {
-            clear_form_data()
+            clear_shopcarts_form_data()
             flash_message(res.responseJSON.message)
         });
 
@@ -292,7 +288,7 @@ $(function () {
         })
 
         ajax.done(function (res) {
-            clear_form_data()
+            clear_shopcarts_form_data()
             flash_message("Shopcart has been Deleted!")
         });
 
@@ -348,13 +344,12 @@ $(function () {
             table += '<th class="col-md-4">User ID</th>'
             table += '<th class="col-md-3">Creation Date</th>'
             table += '<th class="col-md-3">Last Update</th>'
-            table += '<th class="col-md-4">Items</th>'
             table += '<th class="col-md-3">Total price</th>'
             table += '</tr></thead><tbody>'
             let firstShopcart = "";
             for (let i = 0; i < res.length; i++) {
                 let shopcart = res[i];
-                table += `<tr id="row_${i}"><td>${shopcart.shopcart_id}</td><td>${shopcart.shopcart_user_id}</td><td>${shopcart.shopcart_creation_date}</td><td>${shopcart.shopcart_last_update_date}</td><td>${shopcart.shopcart_items}</td><td>${shopcart.shopcart_items}</td><td>${shopcart_total_price}</td></tr>`;
+                table += `<tr id="row_${i}"><td>${shopcart.shopcart_id}</td><td>${shopcart.shopcart_user_id}</td><td>${shopcart.shopcart_creation_date}</td><td>${shopcart.shopcart_last_update_date}</td><td>${shopcart_total_price}</td></tr>`;
                 if (i == 0) {
                     firstShopcart = shopcart;
                 }
@@ -364,7 +359,7 @@ $(function () {
 
             // copy the first result to the form
             if (firstShopcart != "") {
-                update_form_data(firstShopcart)
+                update_shopcarts_form_data(firstShopcart)
             }
 
             flash_message("Success")
