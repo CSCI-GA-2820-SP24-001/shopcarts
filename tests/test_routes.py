@@ -140,7 +140,7 @@ class TestShopcartService(TestCase):
 
     def test_get_shopcart_list(self):
         """It should Get a list of Shopcarts"""
-        shopcarts = self._create_shopcarts(5)
+        self._create_shopcarts(5)
         # user_id = shopcarts[0].user_id
 
         response = self.client.get(BASE_URL)
