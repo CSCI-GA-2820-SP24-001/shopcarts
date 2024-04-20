@@ -30,20 +30,16 @@ class Shopcart(db.Model, PersistentBase):
         nullable=False,
     )
     items = db.relationship("Item", backref="shopcart", passive_deletes=True)
-    _total_price = db.Column(
-        "total_price", db.Numeric(precision=10, scale=2), default=0, nullable=False
-    )
 
-    @property
-    def total_price(self):
+    def get_total_price(self):
         """Returning the total price."""
-        self._total_price = 0
+        total_price = 0
         for item in self.items:
-            self._total_price += item.subtotal
-        return self._total_price
+            total_price += item.get_subtotal()
+        return total_price
 
     def __repr__(self):
-        return f"<Shopcart of a user with an id: {self.user_id}, exists under id=[{self.id}]>"
+        return f"<Shopcart of a user with an id: {self.user_id}, exists under id:{self.id}>"
 
     def serialize(self):
         """Serializes a Shopcart into a dictionary"""
@@ -52,7 +48,7 @@ class Shopcart(db.Model, PersistentBase):
             "user_id": self.user_id,
             "creation_date": self.creation_date,
             "last_updated": self.last_updated,
-            "total_price": self.total_price,
+            "total_price": self.get_total_price(),
             "items": [],
         }
         for item in self.items:
@@ -101,17 +97,3 @@ class Shopcart(db.Model, PersistentBase):
         """
         logger.info("Processing carts query for the user with id: %s ...", user_id)
         return cls.query.filter(cls.user_id == user_id)
-
-    @classmethod
-    def find_by_total_price(cls, _total_price: str) -> list:
-        """Returns all Shopcarts with the given _total_price
-
-        :param _total_price: the total_price of the Shopcart you want to match
-        :type name: str
-
-        :return: a collection of Shopcarts with that total_price
-        :rtype: list
-
-        """
-        logger.info("Processing total_price query for %s ...", _total_price)
-        return cls.query.filter(cls._total_price == _total_price)

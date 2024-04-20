@@ -62,25 +62,7 @@ class TestItems(TestCase):
         item = ItemFactory()
         item.quantity = 2
         item.product_price = 10
-        self.assertEqual(item.subtotal, 20.0)
-
-    def test_product_price_is_none(self):
-        """It should not set the product_price to None"""
-        item = ItemFactory()
-        try:
-            item.product_price = None
-        except DataValidationError:
-            pass
-        self.assertIsNotNone(item.product_price)
-
-    def test_quantity_is_none(self):
-        """It should not set the quantity to None"""
-        item = ItemFactory()
-        try:
-            item.quantity = None
-        except DataValidationError:
-            pass
-        self.assertIsNotNone(item.quantity)
+        self.assertEqual(item.get_subtotal(), 20.0)
 
     def test_repr_item(self):
         """It should be returning the representation of an item."""
@@ -89,50 +71,27 @@ class TestItems(TestCase):
         item.product_name = "Foo"
         self.assertEqual("<Item Foo with id=[22]>", str(item))
 
-    def test_serialize_item(self):
-        """It should properly serialize the item."""
-        item = ItemFactory(
-            id=22,
-            product_name="Foo",
-            cart_id=1,
-            product_id=2,
-            product_price=10,
-            quantity=2,
-            subtotal=20,
-        )
+    def test_serialize_an_item(self):
+        """It should serialize an Item"""
+        item = ItemFactory()
+        serial_item = item.serialize()
+        self.assertEqual(serial_item["id"], item.id)
+        self.assertEqual(serial_item["product_name"], item.product_name)
+        self.assertEqual(serial_item["cart_id"], item.cart_id)
+        self.assertEqual(serial_item["product_id"], item.product_id)
+        self.assertEqual(serial_item["product_price"], item.product_price)
+        self.assertEqual(serial_item["quantity"], item.quantity)
 
-        dictionary_data = item.serialize()
-        ground_truth_data = {
-            "id": 22,
-            "product_name": "Foo",
-            "cart_id": 1,
-            "product_id": 2,
-            "product_price": 10,
-            "quantity": 2,
-            "subtotal": 20,
-        }
-        self.assertDictEqual(dictionary_data, ground_truth_data)
-
-    def test_deserialize_item(self):
-        """It should be deserializinng the item properly."""
-        data_to_deserealize = {
-            "id": 22,
-            "product_name": "Foo",
-            "cart_id": 1,
-            "product_id": 2,
-            "product_price": 10,
-            "quantity": 2,
-            "subtotal": 20,
-        }
-        item = Item()
-        deserialized_item = item.deserialize(data_to_deserealize)
-
-        self.assertEqual(deserialized_item.product_name, "Foo")
-        self.assertEqual(deserialized_item.cart_id, 1)
-        self.assertEqual(deserialized_item.product_id, 2)
-        self.assertEqual(deserialized_item.product_price, 10)
-        self.assertEqual(deserialized_item.quantity, 2)
-        self.assertEqual(deserialized_item.subtotal, 20)
+    def test_deserialize_an_item(self):
+        """It should deserialize an Item"""
+        item = ItemFactory()
+        new_item = Item()
+        new_item.deserialize(item.serialize())
+        self.assertEqual(new_item.cart_id, item.cart_id)
+        self.assertEqual(new_item.product_name, item.product_name)
+        self.assertEqual(new_item.product_id, item.product_id)
+        self.assertEqual(new_item.product_price, item.product_price)
+        self.assertEqual(new_item.quantity, item.quantity)
 
     def test_deserialize_errors(self):
         """It should raise an error if the data is not correct."""

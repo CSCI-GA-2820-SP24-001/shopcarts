@@ -74,7 +74,7 @@ class PersistentBase:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            logger.error("Error updating record: %s", self)
+            logger.error("Error updating record: %s", str(e))
             raise DataValidationError(e) from e
 
     def delete(self) -> None:
