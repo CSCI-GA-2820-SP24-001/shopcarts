@@ -88,7 +88,6 @@ class Item(db.Model, PersistentBase):
         """
         try:
             self.product_name = data["product_name"]
-            self.cart_id = data["cart_id"]
             self.product_id = data["product_id"]
             self.product_price = data["product_price"]
             self.quantity = data["quantity"]
