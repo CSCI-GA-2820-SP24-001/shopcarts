@@ -52,6 +52,8 @@ run: ## Run the service
 cluster: ## Create a K3D Kubernetes cluster with load balancer and registry
 	$(info Creating Kubernetes cluster with a registry and 1 node...)
 	k3d cluster create --agents 1 --registry-create cluster-registry:0.0.0.0:32000 --port '8080:80@loadbalancer'
+	make build-docker
+	make setup-cluster
 
 .PHONY: cluster-rm
 cluster-rm: ## Remove a K3D Kubernetes cluster
