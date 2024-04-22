@@ -106,3 +106,13 @@ class Item(db.Model, PersistentBase):
         """
         logger.info("Processing items query which have a quantity of: %s ...", quantity)
         return cls.query.filter(cls.quantity == quantity)
+
+    @classmethod
+    def find_by_quantity_and_product_id(cls, product_id, quantity) -> list:
+        """Returns all Items in the Shopcart associated with the given quantity
+
+        Args:
+            quantity (int): the quantity of the Items you want to match belongs to
+        """
+        logger.info("Processing items query which have a quantity of: %s ...", quantity)
+        return cls.query.filter(cls.quantity == quantity, cls.product_id == product_id)

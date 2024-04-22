@@ -155,7 +155,6 @@ def list_shopcarts():
     # See if any query filters were passed in
     user_id = request.args.get("user_id")
     if user_id:
-        user_id = float(user_id)
         shopcarts = Shopcart.find_by_user_id(user_id)
     else:
         shopcarts = Shopcart.all()
@@ -312,7 +311,12 @@ def list_items(shopcart_id):
     # See if any query filters were passed in
     product_id = request.args.get("product_id")
     quantity = request.args.get("quantity")
-    if product_id and quantity is None:
+    if product_id and quantity:
+        app.logger.info("Filtering items by the product_id and quantity")
+        filtered_items = Item.find_by_quantity_and_product_id(
+            quantity=int(quantity), product_id=int(product_id)
+        )
+    elif product_id and quantity is None:
         app.logger.info("Filtering items by the product_id")
         filtered_items = Item.find_by_product_id(int(product_id))
     elif quantity and product_id is None:
