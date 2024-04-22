@@ -6,12 +6,22 @@ $(function () {
 
     // Updates the SHOPCARTS form with data from the response
     function update_shopcarts_form_data(res) {
-        $("#shopcart_id").val(res.shopcart_id);
-        $("#shopcart_user_id").val(res.shopcart_user_id);
-        $("#shopcart_creation_date").val(res.shopcart_creation_date);
-        $("#shopcart_last_update_date").val(res.shopcart_last_update_date);
-        $("#shopcart_items").val(res.shopcart_items);
-        $("#shopcart_total_price").val(res.shopcart_total_price);
+        $("#shopcart_id").val(res.id);
+        $("#shopcart_user_id").val(res.user_id);
+        const creation_date = new Date(res.creation_date);
+        const creation_day = creation_date.getDate();
+        const creation_month = creation_date.getMonth() + 1;
+        const creation_year = creation_date.getFullYear();
+        const creation_date_formatted = `${creation_year}-${creation_month < 10 ? '0' + creation_month : creation_month}-${creation_day < 10 ? '0' + creation_day : creation_day}`;
+        $("#shopcart_creation_date").val(creation_date_formatted);
+
+        const last_updated_date = new Date(res.last_updated);
+        const last_updated_day = last_updated_date.getDate();
+        const last_updated_month = last_updated_date.getMonth() + 1;
+        const last_updated_year = last_updated_date.getFullYear();
+        const last_updated_formatted = `${last_updated_year}-${last_updated_month < 10 ? '0' + last_updated_month : last_updated_month}-${last_updated_day < 10 ? '0' + last_updated_day : last_updated_day}`;
+        $("#shopcart_last_update_date").val(last_updated_formatted);
+        $("#shopcart_total_price").val(res.total_price);
     }
 
     /// Clears all SHOPCART form fields
@@ -228,7 +238,6 @@ $(function () {
         ajax.done(function (res) {
             //alert(res.toSource())
             update_shopcarts_form_data(res)
-            // TODO: figure out what is wrong with the user id and why is it not getting displayed
             flash_message("Success")
         });
 
@@ -350,7 +359,7 @@ $(function () {
             for (let i = 0; i < res.length; i++) {
                 let shopcart = res[i];
                 console.log(shopcart)
-                table += `<tr id="row_${i}"><td>${shopcart.id}</td><td>${shopcart.user_id}</td><td>${shopcart.creation_date}</td><td>${shopcart.last_updated}</td><td>${total_price}</td></tr>`;
+                table += `<tr id="row_${i}"><td>${shopcart.id}</td><td>${shopcart.user_id}</td><td>${shopcart.creation_date}</td><td>${shopcart.last_updated}</td><td>${shopcart.total_price}</td></tr>`;
                 if (i == 0) {
                     firstShopcart = shopcart;
                 }
