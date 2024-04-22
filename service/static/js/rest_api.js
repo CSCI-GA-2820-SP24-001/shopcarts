@@ -6,12 +6,22 @@ $(function () {
 
     // Updates the SHOPCARTS form with data from the response
     function update_shopcarts_form_data(res) {
-        $("#shopcart_id").val(res.shopcart_id);
-        $("#shopcart_user_id").val(res.shopcart_user_id);
-        $("#shopcart_creation_date").val(res.shopcart_creation_date);
-        $("#shopcart_last_update_date").val(res.shopcart_last_update_date);
-        $("#shopcart_items").val(res.shopcart_items);
-        $("#shopcart_total_price").val(res.shopcart_total_price);
+        $("#shopcart_id").val(res.id);
+        $("#shopcart_user_id").val(res.user_id);
+        const creation_date = new Date(res.creation_date);
+        const creation_day = creation_date.getDate();
+        const creation_month = creation_date.getMonth() + 1;
+        const creation_year = creation_date.getFullYear();
+        const creation_date_formatted = `${creation_year}-${creation_month < 10 ? '0' + creation_month : creation_month}-${creation_day < 10 ? '0' + creation_day : creation_day}`;
+        $("#shopcart_creation_date").val(creation_date_formatted);
+
+        const last_updated_date = new Date(res.last_updated);
+        const last_updated_day = last_updated_date.getDate();
+        const last_updated_month = last_updated_date.getMonth() + 1;
+        const last_updated_year = last_updated_date.getFullYear();
+        const last_updated_formatted = `${last_updated_year}-${last_updated_month < 10 ? '0' + last_updated_month : last_updated_month}-${last_updated_day < 10 ? '0' + last_updated_day : last_updated_day}`;
+        $("#shopcart_last_update_date").val(last_updated_formatted);
+        $("#shopcart_total_price").val(res.total_price);
     }
 
     /// Clears all SHOPCART form fields
@@ -26,13 +36,13 @@ $(function () {
 
     // Updates the ITEMS form with data from the response
     function update_items_form_data(res) {
-        $("#item_id").val(res.item_id);
-        $("#item_product_name").val(res.item_product_name);
-        $("#item_shopcart_id").val(res.item_shopcart_id);
-        $("#item_product_id").val(res.item_product_id);
-        $("#item_product_price").val(res.item_product_price);
-        $("#item_quantity").val(res.item_quantity);
-        $("#item_subtotal_price").val(res.item_subtotal_price);
+        $("#item_id").val(res.id);
+        $("#item_product_name").val(res.product_name);
+        $("#item_shopcart_id").val(res.cart_id);
+        $("#item_product_id").val(res.product_id);
+        $("#item_product_price").val(res.product_price);
+        $("#item_quantity").val(res.quantity);
+        $("#item_subtotal_price").val(res.subtotal);
     }
 
     /// Clears all ITEMS form fields
@@ -94,15 +104,13 @@ $(function () {
         let item_product_id = $("#item_product_id").val();
         let item_product_price = $("#item_product_price").val();
         let item_quantity = $("#item_quantity").val();
-        let item_subtotal_price = $("#item_subtotal_price").val();
 
         let data = {
-            "product_name": item_product_name,
             "cart_id": item_shopcart_id,
+            "product_name": item_product_name,
             "product_id": item_product_id,
             "product_price": item_product_price,
-            "quantity": item_quantity,
-            "subtotal": item_subtotal_price
+            "quantity": item_quantity
         }
 
         $("#flash_message").empty();
@@ -126,25 +134,18 @@ $(function () {
     });
 
     // ****************************************
-    // Update a Shopcart
+    // Update a Shopcart: WIP
     // ****************************************
 
     $("#update-shopcart-btn").click(function () {
 
         let shopcart_id = $("#shopcart_id").val();
         let shopcart_user_id = $("#shopcart_user_id").val();
-        let shopcart_creation_date = $("#shopcart_creation_date").val();
-        let shopcart_last_update_date = $("#shopcart_last_update_date").val();
-        let shopcart_items = $("#shopcart_items").val();
-        let shopcart_total_price = $("#shopcart_total_price").val();
 
         let data = {
-            "id": shopcart_id,
             "user_id": shopcart_user_id,
-            "creation_date": shopcart_creation_date,
-            "last_updated": shopcart_last_update_date,
-            "total_price": shopcart_total_price,
-            "items": shopcart_items,
+            // TODO: figure out what to do with this?
+            "items": [],
         };
 
         $("#flash_message").empty();
@@ -177,15 +178,13 @@ $(function () {
         let item_product_id = $("#item_product_id").val();
         let item_product_price = $("#item_product_price").val();
         let item_quantity = $("#item_quantity").val();
-        let item_subtotal_price = $("#item_subtotal_price").val();
 
         let data = {
             "product_name": item_product_name,
             "cart_id": item_shopcart_id,
             "product_id": item_product_id,
             "product_price": item_product_price,
-            "quantity": item_quantity,
-            "subtotal": item_subtotal_price
+            "quantity": item_quantity
         }
         $("#flash_message").empty();
 
@@ -228,7 +227,6 @@ $(function () {
         ajax.done(function (res) {
             //alert(res.toSource())
             update_shopcarts_form_data(res)
-            // TODO: figure out what is wrong with the user id and why is it not getting displayed
             flash_message("Success")
         });
 
@@ -259,12 +257,12 @@ $(function () {
 
         ajax.done(function (res) {
             //alert(res.toSource())
-            update_shopcarts_form_data(res)
+            update_items_form_data(res)
             flash_message("Success")
         });
 
         ajax.fail(function (res) {
-            clear_shopcarts_form_data()
+            clear_items_form_data()
             flash_message(res.responseJSON.message)
         });
 
@@ -289,7 +287,39 @@ $(function () {
 
         ajax.done(function (res) {
             clear_shopcarts_form_data()
-            flash_message("Shopcart has been Deleted!")
+            // note: delete is idempotent, so it will always return success even if there is nothing to delete
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            flash_message("Server error!")
+        });
+    });
+
+
+    // ****************************************
+    // Delete an Item
+    // ****************************************
+
+    $("#delete-item-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let item_id = $("#item_id").val();
+
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "DELETE",
+            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            contentType: "application/json",
+            data: '',
+        })
+
+        ajax.done(function (res) {
+            clear_shopcarts_form_data()
+            // note: delete is idempotent, so it will always return success even if there is nothing to delete
+            flash_message("Success")
         });
 
         ajax.fail(function (res) {
@@ -319,11 +349,11 @@ $(function () {
 
     $("#search-shopcart-btn").click(function () {
 
-        let total_price = $("#shopcart_total_price").val();
+        let user_id = $("#shopcart_user_id").val();
         let queryString = ""
 
-        if (total_price) {
-            queryString += 'total_price=' + total_price
+        if (user_id) {
+            queryString += 'user_id=' + user_id
         }
 
         $("#flash_message").empty();
@@ -349,7 +379,7 @@ $(function () {
             let firstShopcart = "";
             for (let i = 0; i < res.length; i++) {
                 let shopcart = res[i];
-                table += `<tr id="row_${i}"><td>${shopcart.shopcart_id}</td><td>${shopcart.shopcart_user_id}</td><td>${shopcart.shopcart_creation_date}</td><td>${shopcart.shopcart_last_update_date}</td><td>${shopcart_total_price}</td></tr>`;
+                table += `<tr id="row_${i}"><td>${shopcart.id}</td><td>${shopcart.user_id}</td><td>${shopcart.creation_date}</td><td>${shopcart.last_updated}</td><td>${shopcart.total_price}</td></tr>`;
                 if (i == 0) {
                     firstShopcart = shopcart;
                 }
@@ -360,6 +390,82 @@ $(function () {
             // copy the first result to the form
             if (firstShopcart != "") {
                 update_shopcarts_form_data(firstShopcart)
+            }
+            else {
+                clear_shopcarts_form_data()
+            }
+
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
+    // Search for an Item
+    // ****************************************
+
+    $("#search-item-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let product_id = $("#item_product_id").val();
+        let quantity = $("#item_quantity").val();
+        let queryString = ""
+        if (product_id && quantity) {
+            queryString += 'product_id=' + product_id + '&quantity=' + quantity;
+        }
+        else {
+            if (product_id) {
+                queryString += 'product_id=' + product_id;
+            }
+
+            if (quantity) {
+                queryString += 'quantity=' + quantity;
+            }
+        }
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/shopcarts/${shopcart_id}/items?${queryString}`,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function (res) {
+            //alert(res.toSource())
+            $("#item_search_results").empty();
+            let table = '<table class="table table-striped" cellpadding="10">'
+            table += '<thead><tr>'
+            table += '<th class="col-md-3">Shopcart ID</th>'
+            table += '<th class="col-md-1">Item ID</th>'
+            table += '<th class="col-md-3">Product name</th>'
+            table += '<th class="col-md-3">Product ID</th>'
+            table += '<th class="col-md-2">Product Price</th>'
+            table += '<th class="col-md-2">Quantity</th>'
+            table += '<th class="col-md-3">Subtotal</th>'
+            table += '</tr></thead><tbody>'
+            let firstItem = "";
+            for (let i = 0; i < res.length; i++) {
+                let item = res[i];
+                table += `<tr id="row_${i}"><td>${item.cart_id}</td><td>${item.id}</td><td>${item.product_name}</td><td>${item.product_id}</td><td>${item.product_price}</td><td>${item.quantity}</td><td>${item.subtotal}</td></tr>`;
+                if (i == 0) {
+                    firstItem = item;
+                }
+            }
+            table += '</tbody></table>';
+            $("#search_results").append(table);
+
+            // copy the first result to the form
+            if (firstItem != "") {
+                update_items_form_data(firstItem)
+            }
+            else {
+                clear_items_form_data()
             }
 
             flash_message("Success")
