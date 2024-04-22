@@ -349,7 +349,8 @@ $(function () {
             let firstShopcart = "";
             for (let i = 0; i < res.length; i++) {
                 let shopcart = res[i];
-                table += `<tr id="row_${i}"><td>${shopcart.shopcart_id}</td><td>${shopcart.shopcart_user_id}</td><td>${shopcart.shopcart_creation_date}</td><td>${shopcart.shopcart_last_update_date}</td><td>${shopcart_total_price}</td></tr>`;
+                console.log(shopcart)
+                table += `<tr id="row_${i}"><td>${shopcart.id}</td><td>${shopcart.user_id}</td><td>${shopcart.creation_date}</td><td>${shopcart.last_updated}</td><td>${total_price}</td></tr>`;
                 if (i == 0) {
                     firstShopcart = shopcart;
                 }
