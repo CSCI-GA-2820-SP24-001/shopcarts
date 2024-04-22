@@ -36,13 +36,13 @@ $(function () {
 
     // Updates the ITEMS form with data from the response
     function update_items_form_data(res) {
-        $("#item_id").val(res.item_id);
-        $("#item_product_name").val(res.item_product_name);
-        $("#item_shopcart_id").val(res.item_shopcart_id);
-        $("#item_product_id").val(res.item_product_id);
-        $("#item_product_price").val(res.item_product_price);
-        $("#item_quantity").val(res.item_quantity);
-        $("#item_subtotal_price").val(res.item_subtotal_price);
+        $("#item_id").val(res.id);
+        $("#item_product_name").val(res.product_name);
+        $("#item_shopcart_id").val(res.cart_id);
+        $("#item_product_id").val(res.product_id);
+        $("#item_product_price").val(res.product_price);
+        $("#item_quantity").val(res.quantity);
+        $("#item_subtotal_price").val(res.subtotal);
     }
 
     /// Clears all ITEMS form fields
@@ -104,15 +104,13 @@ $(function () {
         let item_product_id = $("#item_product_id").val();
         let item_product_price = $("#item_product_price").val();
         let item_quantity = $("#item_quantity").val();
-        let item_subtotal_price = $("#item_subtotal_price").val();
 
         let data = {
-            "product_name": item_product_name,
             "cart_id": item_shopcart_id,
+            "product_name": item_product_name,
             "product_id": item_product_id,
             "product_price": item_product_price,
-            "quantity": item_quantity,
-            "subtotal": item_subtotal_price
+            "quantity": item_quantity
         }
 
         $("#flash_message").empty();
@@ -136,25 +134,18 @@ $(function () {
     });
 
     // ****************************************
-    // Update a Shopcart
+    // Update a Shopcart: WIP
     // ****************************************
 
     $("#update-shopcart-btn").click(function () {
 
         let shopcart_id = $("#shopcart_id").val();
         let shopcart_user_id = $("#shopcart_user_id").val();
-        let shopcart_creation_date = $("#shopcart_creation_date").val();
-        let shopcart_last_update_date = $("#shopcart_last_update_date").val();
-        let shopcart_items = $("#shopcart_items").val();
-        let shopcart_total_price = $("#shopcart_total_price").val();
 
         let data = {
-            "id": shopcart_id,
             "user_id": shopcart_user_id,
-            "creation_date": shopcart_creation_date,
-            "last_updated": shopcart_last_update_date,
-            "total_price": shopcart_total_price,
-            "items": shopcart_items,
+            // TODO: figure out what to do with this?
+            "items": [],
         };
 
         $("#flash_message").empty();
@@ -187,15 +178,13 @@ $(function () {
         let item_product_id = $("#item_product_id").val();
         let item_product_price = $("#item_product_price").val();
         let item_quantity = $("#item_quantity").val();
-        let item_subtotal_price = $("#item_subtotal_price").val();
 
         let data = {
             "product_name": item_product_name,
             "cart_id": item_shopcart_id,
             "product_id": item_product_id,
             "product_price": item_product_price,
-            "quantity": item_quantity,
-            "subtotal": item_subtotal_price
+            "quantity": item_quantity
         }
         $("#flash_message").empty();
 
@@ -268,12 +257,12 @@ $(function () {
 
         ajax.done(function (res) {
             //alert(res.toSource())
-            update_shopcarts_form_data(res)
+            update_items_form_data(res)
             flash_message("Success")
         });
 
         ajax.fail(function (res) {
-            clear_shopcarts_form_data()
+            clear_items_form_data()
             flash_message(res.responseJSON.message)
         });
 
@@ -298,7 +287,8 @@ $(function () {
 
         ajax.done(function (res) {
             clear_shopcarts_form_data()
-            flash_message("Shopcart has been Deleted!")
+            // note: delete is idempotent, so it will always return success even if there is nothing to delete
+            flash_message("Success")
         });
 
         ajax.fail(function (res) {
@@ -358,7 +348,6 @@ $(function () {
             let firstShopcart = "";
             for (let i = 0; i < res.length; i++) {
                 let shopcart = res[i];
-                console.log(shopcart)
                 table += `<tr id="row_${i}"><td>${shopcart.id}</td><td>${shopcart.user_id}</td><td>${shopcart.creation_date}</td><td>${shopcart.last_updated}</td><td>${shopcart.total_price}</td></tr>`;
                 if (i == 0) {
                     firstShopcart = shopcart;
