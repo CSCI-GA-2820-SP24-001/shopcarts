@@ -459,7 +459,7 @@ $(function () {
                 }
             }
             table += '</tbody></table>';
-            $("#search_results").append(table);
+            $("#item_search_results").append(table);
 
             // copy the first result to the form
             if (firstItem != "") {
