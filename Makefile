@@ -69,6 +69,7 @@ depoy: ## Deploy the service on local Kubernetes
 build-docker: ## Build the docker image and push it to the registry
 	$(info Building the docker image and pushing it to the registry...)
 	docker build -t shopcarts:1.0 .
+	sudo bash -c "echo '127.0.0.1    cluster-registry' >> /etc/hosts"
 	docker tag shopcarts:1.0 cluster-registry:32000/shopcarts:1.0
 	docker push cluster-registry:32000/shopcarts:1.0
 
