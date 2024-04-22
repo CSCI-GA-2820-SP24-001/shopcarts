@@ -96,4 +96,4 @@ class Shopcart(db.Model, PersistentBase):
             user_id (string): the user_id of the user to whom Shopcart you want to match belongs to
         """
         logger.info("Processing carts query for the user with id: %s ...", user_id)
-        return cls.query.filter(cls.user_id == user_id)
+        return cls.query.filter(cls.user_id == str(user_id))

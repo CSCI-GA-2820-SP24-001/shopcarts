@@ -328,11 +328,11 @@ $(function () {
 
     $("#search-shopcart-btn").click(function () {
 
-        let total_price = $("#shopcart_total_price").val();
+        let user_id = $("#shopcart_user_id").val();
         let queryString = ""
 
-        if (total_price) {
-            queryString += 'total_price=' + total_price
+        if (user_id) {
+            queryString += 'user_id=' + user_id
         }
 
         $("#flash_message").empty();
@@ -370,6 +370,9 @@ $(function () {
             // copy the first result to the form
             if (firstShopcart != "") {
                 update_shopcarts_form_data(firstShopcart)
+            }
+            else {
+                clear_shopcarts_form_data()
             }
 
             flash_message("Success")
