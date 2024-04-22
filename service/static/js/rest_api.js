@@ -384,4 +384,77 @@ $(function () {
 
     });
 
+    // ****************************************
+    // Search for an Item
+    // ****************************************
+
+    $("#search-item-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let product_id = $("#item_product_id").val();
+        let quantity = $("#item_quantity").val();
+        let queryString = ""
+        if (product_id && quantity) {
+            queryString += 'product_id=' + product_id + '&quantity=' + quantity;
+        }
+        else {
+            if (product_id) {
+                queryString += 'product_id=' + product_id;
+            }
+
+            if (quantity) {
+                queryString += 'quantity=' + quantity;
+            }
+        }
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/shopcarts/${shopcart_id}/items?${queryString}`,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function (res) {
+            //alert(res.toSource())
+            $("#item_search_results").empty();
+            let table = '<table class="table table-striped" cellpadding="10">'
+            table += '<thead><tr>'
+            table += '<th class="col-md-3">Shopcart ID</th>'
+            table += '<th class="col-md-1">Item ID</th>'
+            table += '<th class="col-md-3">Product name</th>'
+            table += '<th class="col-md-3">Product ID</th>'
+            table += '<th class="col-md-2">Product Price</th>'
+            table += '<th class="col-md-2">Quantity</th>'
+            table += '<th class="col-md-3">Subtotal</th>'
+            table += '</tr></thead><tbody>'
+            let firstItem = "";
+            for (let i = 0; i < res.length; i++) {
+                let item = res[i];
+                table += `<tr id="row_${i}"><td>${item.cart_id}</td><td>${item.id}</td><td>${item.product_name}</td><td>${item.product_id}</td><td>${item.product_price}</td><td>${item.quantity}</td><td>${item.subtotal}</td></tr>`;
+                if (i == 0) {
+                    firstItem = item;
+                }
+            }
+            table += '</tbody></table>';
+            $("#search_results").append(table);
+
+            // copy the first result to the form
+            if (firstItem != "") {
+                update_items_form_data(firstItem)
+            }
+            else {
+                clear_items_form_data()
+            }
+
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
 })
