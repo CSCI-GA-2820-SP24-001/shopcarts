@@ -141,16 +141,18 @@ class TestShopcartService(TestCase):
     def test_get_shopcart_list(self):
         """It should Get a list of Shopcarts"""
         self._create_shopcarts(5)
-        # user_id = shopcarts[0].user_id
 
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
-        # resp = self.client.get(f"{BASE_URL}?user_id={user_id}")
-        # data = resp.get_json()
-        # self.assertEqual(len(data), 1)
+        shopcart = data[0]
+        shopcart_user_id = shopcart["user_id"]
+
+        resp = self.client.get(f"{BASE_URL}?user_id={shopcart_user_id}")
+        data = resp.get_json()
+        self.assertNotEqual(len(data), 0)
 
     def test_add_item(self):
         """It should Add an item to a shopcart"""
@@ -325,6 +327,12 @@ class TestShopcartService(TestCase):
         self.assertNotEqual(len(data), 0)
 
         resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items?quantity={quantity}")
+        data = resp.get_json()
+        self.assertNotEqual(len(data), 0)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{shopcart.id}/items?product_id={product_id}&quantity={quantity}"
+        )
         data = resp.get_json()
         self.assertNotEqual(len(data), 0)
 

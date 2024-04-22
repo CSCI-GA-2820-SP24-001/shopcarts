@@ -52,6 +52,8 @@ run: ## Run the service
 cluster: ## Create a K3D Kubernetes cluster with load balancer and registry
 	$(info Creating Kubernetes cluster with a registry and 1 node...)
 	k3d cluster create --agents 1 --registry-create cluster-registry:0.0.0.0:32000 --port '8080:80@loadbalancer'
+	make build-docker
+	make setup-cluster
 
 .PHONY: cluster-rm
 cluster-rm: ## Remove a K3D Kubernetes cluster
@@ -67,6 +69,7 @@ depoy: ## Deploy the service on local Kubernetes
 build-docker: ## Build the docker image and push it to the registry
 	$(info Building the docker image and pushing it to the registry...)
 	docker build -t shopcarts:1.0 .
+	sudo bash -c "echo '127.0.0.1    cluster-registry' >> /etc/hosts"
 	docker tag shopcarts:1.0 cluster-registry:32000/shopcarts:1.0
 	docker push cluster-registry:32000/shopcarts:1.0
 

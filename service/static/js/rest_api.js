@@ -172,7 +172,7 @@ $(function () {
     // Update an Item
     // ****************************************
     $("#update-item-btn").click(function () {
-
+        let item_id = $("#item_id").val();
         let item_product_name = $("#item_product_name").val();
         let item_shopcart_id = $("#item_shopcart_id").val();
         let item_product_id = $("#item_product_id").val();
@@ -180,17 +180,18 @@ $(function () {
         let item_quantity = $("#item_quantity").val();
 
         let data = {
-            "product_name": item_product_name,
             "cart_id": item_shopcart_id,
+            "product_name": item_product_name,
             "product_id": item_product_id,
             "product_price": item_product_price,
             "quantity": item_quantity
         }
+
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            url: `/shopcarts/${item_shopcart_id}/items/${item_id}`,
             contentType: "application/json",
             data: JSON.stringify(data)
         })
@@ -414,15 +415,16 @@ $(function () {
         let product_id = $("#item_product_id").val();
         let quantity = $("#item_quantity").val();
         let queryString = ""
-        if (product_id && quantity) {
-            queryString += 'product_id=' + product_id + '&quantity=' + quantity;
-        }
-        else {
-            if (product_id) {
-                queryString += 'product_id=' + product_id;
-            }
 
-            if (quantity) {
+        if (product_id) {
+            queryString += 'product_id=' + product_id;
+        }
+
+        if (quantity) {
+            if (queryString != "") {
+                queryString += '&quantity=' + quantity;
+            }
+            else {
                 queryString += 'quantity=' + quantity;
             }
         }
@@ -458,7 +460,7 @@ $(function () {
                 }
             }
             table += '</tbody></table>';
-            $("#search_results").append(table);
+            $("#item_search_results").append(table);
 
             // copy the first result to the form
             if (firstItem != "") {
