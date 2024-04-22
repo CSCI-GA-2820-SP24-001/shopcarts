@@ -239,7 +239,7 @@ def get_item(shopcart_id, item_id):
     This endpoint returns just an item
     """
     app.logger.info(
-        "Request to retrieve Item %s for Shopcart id: %s", (item_id, shopcart_id)
+        "Request to retrieve Item with id: %d for Shopcart id: %d", item_id, shopcart_id
     )
 
     # See if the item exists and abort if it doesn't
