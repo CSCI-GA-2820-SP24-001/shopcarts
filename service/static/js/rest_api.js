@@ -414,15 +414,16 @@ $(function () {
         let product_id = $("#item_product_id").val();
         let quantity = $("#item_quantity").val();
         let queryString = ""
-        if (product_id && quantity) {
-            queryString += 'product_id=' + product_id + '&quantity=' + quantity;
-        }
-        else {
-            if (product_id) {
-                queryString += 'product_id=' + product_id;
-            }
 
-            if (quantity) {
+        if (product_id) {
+            queryString += 'product_id=' + product_id;
+        }
+
+        if (quantity) {
+            if (queryString != "") {
+                queryString += '&quantity=' + quantity;
+            }
+            else {
                 queryString += 'quantity=' + quantity;
             }
         }
