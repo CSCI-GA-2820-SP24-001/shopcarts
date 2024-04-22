@@ -132,7 +132,7 @@ def delete_items(shopcart_id, item_id):
     This endpoint will delete an Item based the id specified in the path
     """
     app.logger.info(
-        "Request to delete Item %s for Shopcart id: %s", (item_id, shopcart_id)
+        "Request to delete Item %s for Shopcart id: %s", item_id, shopcart_id
     )
 
     # See if the item exists and delete it if it does

@@ -296,6 +296,37 @@ $(function () {
         });
     });
 
+
+    // ****************************************
+    // Delete an Item
+    // ****************************************
+
+    $("#delete-item-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let item_id = $("#item_id").val();
+
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "DELETE",
+            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            contentType: "application/json",
+            data: '',
+        })
+
+        ajax.done(function (res) {
+            clear_shopcarts_form_data()
+            // note: delete is idempotent, so it will always return success even if there is nothing to delete
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            flash_message("Server error!")
+        });
+    });
+
     // ****************************************
     // Clearing our forms
     // ****************************************
