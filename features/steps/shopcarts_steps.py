@@ -30,13 +30,12 @@ def step_impl(context):
 
     # Load the database with new shopcarts
     for row in context.table:
-        payload = {"user_id": row["user_id"]}
-
+        payload = {"user_id": row["user_id"], "items": []}
         context.resp = requests.post(rest_endpoint, json=payload)
         assert context.resp.status_code == HTTP_201_CREATED
 
 
-@given("the following cartitems")
+@given("the following items")
 def step_impl(context):
     """Delete all cart items and load new ones"""
 
@@ -51,12 +50,13 @@ def step_impl(context):
     # Load the database with new shopcarts
     for row in context.table:
         user_id = row["user_id"]
-        shopcart_id = shopcarts.get(int(user_id), None)
+        shopcart_id = int(shopcarts[user_id])
         payload = {
-            "product_price": row["product_price"],
+            "cart_id": shopcart_id,
+            "product_name": row["product_name"],
             "product_id": row["product_id"],
+            "product_price": row["product_price"],
             "quantity": row["quantity"],
-            "shopcart_id": shopcart_id,
         }
 
         rest_endpoint = f"{context.base_url}/shopcarts/{shopcart_id}/items"
