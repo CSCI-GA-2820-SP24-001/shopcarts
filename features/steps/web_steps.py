@@ -12,6 +12,7 @@ from behave import when, then
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions
+import requests
 
 # ID_PREFIX = "pet_"
 
@@ -48,7 +49,7 @@ def step_impl(context, message):
 @when('I press the "{button}" button')
 def step_impl(context, button):
     """Presses button on the UI"""
-    button_id = button.lower() + "-btn"
+    button_id = button.replace(" ", "-").lower() + "-btn"
     context.driver.find_element(By.ID, button_id).click()
 
 
