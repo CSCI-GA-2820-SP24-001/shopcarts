@@ -36,3 +36,22 @@ Feature: The shopcarts service back-end
         Then I should see "1" under the row "User ID 1" in the table
         And I should see "2" under the row "User ID 2" in the table
         And I should see "3" under the row "User ID 3" in the table
+
+    Scenario: Retrieve a shopcart
+        When I visit the "Home Page"
+        And I press the "Search Shopcart" button
+        When I copy the "Shopcart ID" field
+        And I press the "Retrieve Shopcart" button
+        Then the "Shopcart ID" field should not be empty
+        And the "Shopcart User ID" field should not be empty
+        And the "Shopcart Creation Date" field should not be empty
+
+    Scenario: Update a shopcart
+        When I visit the "Home Page"
+        And I press the "Search Shopcart" button
+        Then I should see "1" under the row "User ID 1" in the table
+        When I copy the "Shopcart ID" field
+        And I set the "Shopcart User ID" to "10"
+        And I press the "Update Shopcart" button
+        Then I should see the message "Success"
+

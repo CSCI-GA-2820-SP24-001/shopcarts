@@ -153,6 +153,13 @@ def step_impl(context, element_name):
     assert element.get_attribute("value") == ""
 
 
+@then('the "{element_name}" field should not be empty')
+def step_impl(context, element_name):
+    element_id = element_name.lower().replace(" ", "_")
+    element = context.driver.find_element(By.ID, element_id)
+    assert element.get_attribute("value") != ""
+
+
 @then('I should see "{element_name}" in the results being "{text_string}"')
 def step_impl(context, element_name, text_string):
     element_id = element_name.lower().replace(" ", "_")
