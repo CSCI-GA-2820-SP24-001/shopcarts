@@ -65,6 +65,18 @@ def step_impl(context, element_id):
     assert found
 
 
+@then('I should see "{text_string}" under the row "{element_id}" in the table')
+def step_impl(context, text_string, element_id):
+    """Verifies visibility of <td> with id=element_id in the results table"""
+    element_id = element_id.lower().replace(" ", "-")
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, element_id), text_string
+        )
+    )
+    assert found
+
+
 @then('I should not see "{name}" in the results')
 def step_impl(context, name):
     """Verifies absence of <td> with id=element_id in the results table"""
