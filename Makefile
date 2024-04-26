@@ -61,9 +61,13 @@ cluster-rm: ## Remove a K3D Kubernetes cluster
 	k3d cluster delete
 
 .PHONY: deploy
-depoy: ## Deploy the service on local Kubernetes
+deploy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
-	kubectl apply -f k8s/
+	kubectl apply -f k8s/pv.yaml
+	kubectl apply -f k8s/postgresql.yaml
+	kubectl apply -f k8s/deployment.yaml
+	kubectl apply -f k8s/service.yaml
+	kubectl apply -f k8s/ingress.yaml
 
 .PHONY: build-docker
 build-docker: ## Build the docker image and push it to the registry
@@ -80,16 +84,3 @@ setup-cluster: ## Setup the cluster and deploy the service
 	kubectl get ns
 	kubectl config set-context --current --namespace shopcarts-dev
 	alias kns='kubectl config set-context --current --namespace'
-	$(info Creating the postgresql deployment and service...)
-	kubectl apply -f k8s/pv.yaml
-	kubectl apply -f k8s/postgresql.yaml 
-	$(info Exposing the DB URI and password...)
-	export DATABASE_URI='postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/shopcarts'
-	export POSTGRES_PASSWORD='pgs3cr3t'
-	$(info Creating a secret...)
-	kubectl create secret generic postgres-creds --from-literal=database_uri=$DATABASE_URI --from-literal=password=$POSTGRES_PASSWORD
-	$(info Finally generating the cluster with all the information...)
-	kubectl apply -f k8s/secret.yaml
-	kubectl apply -f k8s/deployment.yaml
-	kubectl apply -f k8s/service.yaml
-	kubectl apply -f k8s/ingress.yaml

@@ -1,0 +1,61 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: shopcarts-cd-pipeline
+spec:
+  params:
+    - default: "https://github.com/CSCI-GA-2820-SP24-001/shopcarts/"
+      description: The URL to the git repo
+      name: GIT_REPO
+      type: string
+    - default: master
+      description: The reference (branch or ref)
+      name: GIT_REF
+      type: string
+    - default: shopcarts
+      description: Name of the application
+      name: APP_NAME
+      type: string
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.GIT_REPO)
+        - name: revision
+          value: ""
+        - name: refspec
+          value: ""
+        - name: submodules
+          value: "true"
+        - name: depth
+          value: "1"
+        - name: sslVerify
+          value: "true"
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: subdirectory
+          value: ""
+        - name: sparseCheckoutDirectories
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: httpProxy
+          value: ""
+        - name: httpsProxy
+          value: ""
+        - name: noProxy
+          value: ""
+        - name: verbose
+          value: "true"
+        - name: gitInitImage
+          value: "registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:66f219b4d54a41b945cb5715ecd1fbb5d25431cf8dad4b06914a4cdc65b298cc"
+        - name: userHome
+          value: /home/git
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shopcarts-pipeline-workspace
+  workspaces:
+    - name: shopcarts-pipeline-workspace
