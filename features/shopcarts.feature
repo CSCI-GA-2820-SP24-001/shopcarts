@@ -30,3 +30,7 @@ Feature: The shopcarts service back-end
         And I press the "Create Shopcart" button
         Then I should see the message "Success"
 
+    Scenario: List shopcarts
+        When I visit the "Home Page"
+        And I press the "Search Shopcart" button
+        Then I should see "user-id-3" in the results being "3"
