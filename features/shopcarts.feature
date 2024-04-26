@@ -55,3 +55,12 @@ Feature: The shopcarts service back-end
         And I press the "Update Shopcart" button
         Then I should see the message "Success"
 
+    Scenario: Filter shopcarts by user ID
+        When I visit the "Home Page"
+        And I set the "Shopcart User ID" to "1"
+        And I press the "Search Shopcart" button
+        Then I should see "1" under the row "User ID 1" in the table
+        And I should not see "User ID 2" in the results
+        And I should not see "User ID 3" in the results
+
+
