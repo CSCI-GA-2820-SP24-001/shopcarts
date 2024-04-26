@@ -8,13 +8,16 @@ For information on Waiting until elements are present in the HTML see:
 """
 
 import logging
+import requests
 from behave import when, then
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions
-import requests
+from selenium.common.exceptions import NoSuchElementException
 
-# ID_PREFIX = "pet_"
+HTTP_200_OK = 200
+HTTP_201_CREATED = 201
+HTTP_204_NO_CONTENT = 204
 
 
 @when('I visit the "Home Page"')
@@ -58,6 +61,18 @@ def step_impl(context, element_id):
     """Verifies visibility of <td> with id=element_id in the results table"""
     found = WebDriverWait(context.driver, context.wait_seconds).until(
         expected_conditions.visibility_of_element_located((By.ID, element_id))
+    )
+    assert found
+
+
+@then('I should see "{text_string}" under the row "{element_id}" in the table')
+def step_impl(context, text_string, element_id):
+    """Verifies visibility of <td> with id=element_id in the results table"""
+    element_id = element_id.lower().replace(" ", "-")
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, element_id), text_string
+        )
     )
     assert found
 
@@ -138,19 +153,18 @@ def step_impl(context, element_name):
     assert element.get_attribute("value") == ""
 
 
-@then(
-    'I should see "{text_string}" in the results with "{element_name}" being "{text_string_2}"'
-)
-def step_impl(context, text_string, element_name, text_string_2):
+@then('I should see "{element_name}" in the results being "{text_string}"')
+def step_impl(context, element_name, text_string):
     element_id = element_name.lower().replace(" ", "_")
+    print(element_id)
     found_text = WebDriverWait(context.driver, context.wait_seconds).until(
         expected_conditions.text_to_be_present_in_element_value(
-            (By.ID, element_id), text_string_2
+            (By.ID, element_id), text_string
         )
     )
     assert (
         found_text
-    ), f"Expected text '{text_string_2}' not found in element '{element_id}'"
+    ), f"Expected text '{text_string}' not found in element '{element_id}'"
 
 
 ##################################################################

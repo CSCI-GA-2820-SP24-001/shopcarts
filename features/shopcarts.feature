@@ -30,3 +30,9 @@ Feature: The shopcarts service back-end
         And I press the "Create Shopcart" button
         Then I should see the message "Success"
 
+    Scenario: List shopcarts
+        When I visit the "Home Page"
+        And I press the "Search Shopcart" button
+        Then I should see "1" under the row "User ID 1" in the table
+        And I should see "2" under the row "User ID 2" in the table
+        And I should see "3" under the row "User ID 3" in the table
