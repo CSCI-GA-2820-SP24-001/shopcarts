@@ -52,8 +52,8 @@ class TestItems(TestCase):
         item_resource.create()
 
         self.assertIsNotNone(item_resource.id)
-        found = Item.all()
-        self.assertEqual(len(found), 1)
+        found = Item.all(shopcart_resource.id)
+        self.assertEqual(found.count(), 1)
         data = Item.find(item_resource.id)
         self.assertEqual(data.product_id, item_resource.product_id)
 
@@ -123,7 +123,7 @@ class TestItems(TestCase):
         item2 = ItemFactory(shopcart=shopcart)
         item2.create()
 
-        items = Item.all()
+        items = Item.all(shopcart.id)
         for item in items:
             self.assertEqual(item.cart_id, shopcart.id)
 
@@ -138,7 +138,7 @@ class TestItems(TestCase):
 
         self.assertNotEqual(Item.find_by_product_id(product_id).count(), 0)
         self.assertNotEqual(Item.find_by_quantity(quantity).count(), 0)
-        self.assertEqual(len(items), 2)
+        self.assertEqual(items.count(), 2)
 
 
 ######################################################################
