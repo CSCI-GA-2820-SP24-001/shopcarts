@@ -114,3 +114,19 @@ Feature: The shopcarts service back-end
         Then I should see the message "Success"
         And I should see "150.00" in the "Item Product Price" field
         And I should see "2" in the "Item Quantity" field
+
+    # RETRIEVE AN ITEM
+    Scenario: Retrieve an item
+        When I visit the "Home Page"
+        And I press the "Search Shopcart" button
+        Then I should see the message "Success"
+        When I copy the "Shopcart ID" field
+        And I paste the "Item Shopcart ID" field
+        And I press the "Search Item" button
+        Then the "Item ID" field should not be empty
+        When I press the "Retrieve Item" button
+        Then I should see the message "Success"
+        And the "Item ID" field should not be empty
+        And the "Item Product ID" field should not be empty
+        And the "Item Product Price" field should not be empty
+        And the "Item Quantity" field should not be empty
