@@ -87,3 +87,14 @@ Feature: The shopcarts service back-end
         And I should see "2700.0" in the "Item Product Price" field
         And I should see "MacBook 15 Pro+" in the "Item Product Name" field
 
+    # DELETE AN ITEM
+    Scenario: Delete an item
+        When I visit the "Home Page"
+        And I press the "Search Shopcart" button
+        Then I should see the message "Success"
+        When I copy the "Shopcart ID" field
+        And I paste the "Item Shopcart ID" field
+        And I press the "Search Item" button
+        Then the "Item ID" field should not be empty
+        When I press the "Delete Item" button
+        Then I should see the message "Success"
