@@ -324,7 +324,7 @@ def list_items(shopcart_id):
         filtered_items = Item.find_by_quantity(int(quantity))
     else:
         app.logger.info("Requesting all the items")
-        filtered_items = Item.all()
+        filtered_items = Item.all(int(shopcart_id))
 
     # Get the items for the shopcart
     results = [item.serialize() for item in filtered_items]

@@ -80,10 +80,10 @@ class Item(db.Model, PersistentBase):
     # CLASS METHODS
     ##################################################
     @classmethod
-    def all(cls) -> list:
+    def all(cls, cart_id) -> list:
         """Returns all of the Items in the database"""
         logger.info("Processing all Items and returning them as a list ...")
-        return cls.query.all()
+        return cls.query.filter(cls.cart_id == cart_id)
 
     @classmethod
     def find_by_product_id(cls, product_id) -> list:

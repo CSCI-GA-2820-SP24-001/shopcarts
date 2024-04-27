@@ -89,13 +89,6 @@ class PersistentBase:
             raise DataValidationError(e) from e
 
     @classmethod
-    def all(cls):
-        """Returns all of the records in the database"""
-        logger.info("Processing all records")
-        # pylint: disable=no-member
-        return cls.query.all()
-
-    @classmethod
     def find(cls, by_id):
         """Finds a record by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)

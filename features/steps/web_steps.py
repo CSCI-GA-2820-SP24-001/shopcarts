@@ -77,13 +77,14 @@ def step_impl(context, text_string, element_id):
     assert found
 
 
-@then('I should not see "{name}" in the results')
-def step_impl(context, name):
+@then('I should not see "{element_name}" in the results')
+def step_impl(context, element_name):
     """Verifies absence of <td> with id=element_id in the results table"""
     found_element = False
     context.driver.implicitly_wait(1)
     try:
-        context.driver.find_element(By.ID, name)
+        element_id = element_name.lower().replace(" ", "_")
+        context.driver.find_element(By.ID, element_name)
         found_element = True
     except NoSuchElementException:
         pass
@@ -153,10 +154,16 @@ def step_impl(context, element_name):
     assert element.get_attribute("value") == ""
 
 
+@then('the "{element_name}" field should not be empty')
+def step_impl(context, element_name):
+    element_id = element_name.lower().replace(" ", "_")
+    element = context.driver.find_element(By.ID, element_id)
+    assert element.get_attribute("value") != ""
+
+
 @then('I should see "{element_name}" in the results being "{text_string}"')
 def step_impl(context, element_name, text_string):
     element_id = element_name.lower().replace(" ", "_")
-    print(element_id)
     found_text = WebDriverWait(context.driver, context.wait_seconds).until(
         expected_conditions.text_to_be_present_in_element_value(
             (By.ID, element_id), text_string
