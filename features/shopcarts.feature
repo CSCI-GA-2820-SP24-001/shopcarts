@@ -68,6 +68,20 @@ Feature: The shopcarts service back-end
         And I press the "Update Shopcart" button
         Then I should see the message "Success"
 
+
+    # DELETE A SHOPCART
+    Scenario: Delete a shopcart
+        When I visit the "Home Page"
+        And I set the "Shopcart User ID" to "1"
+        And I press the "Search Shopcart" button
+        Then I should see the message "Success"
+        And I should see "1" under the row "User ID 1" in the table
+        When I press the "Delete Shopcart" button
+        Then I should see the message "Success"
+        When I press the "Search Shopcart" button
+        Then I should see the message "Success"
+        And I should not see "User ID 1" in the results
+
     # CREATE AN ITEM
     Scenario: Create an item
         When I visit the "Home Page"
