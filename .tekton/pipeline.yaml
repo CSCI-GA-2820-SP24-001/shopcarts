@@ -57,5 +57,39 @@ spec:
       workspaces:
         - name: output
           workspace: shopcarts-pipeline-workspace
+    - name: linting
+      params:
+        - name: image
+          value: "docker.io/python:3.11-slim"
+        - name: path
+          value: service
+        - name: args
+          value: []
+        - name: requirements_file
+          value: requirements.txt
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: pylint
+      workspaces:
+        - name: source
+          workspace: shopcarts-pipeline-workspace
+    - name: test
+      params:
+        - name: PYTEST_ARGS
+          value: []
+        - name: SECRET_NAME
+          value: postgres-creds
+        - name: SECRET_KEY
+          value: database_uri
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: pytest-env
+      workspaces:
+        - name: source
+          workspace: shopcarts-pipeline-workspace
   workspaces:
     - name: shopcarts-pipeline-workspace
