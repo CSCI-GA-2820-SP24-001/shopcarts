@@ -19,8 +19,6 @@ spec:
       labels:
         app: shopcarts
     spec:
-      imagePullSecrets:
-        - name: all-icr-io
       restartPolicy: Always
       containers:
         - name: shopcarts
