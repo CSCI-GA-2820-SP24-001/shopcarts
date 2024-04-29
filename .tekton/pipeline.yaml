@@ -140,5 +140,21 @@ spec:
       workspaces:
         - name: source
           workspace: shopcarts-pipeline-workspace
+    - name: behave
+      params:
+        - name: BASE_URL
+          value: "https://shopcarts-whykay-01-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com"
+        - name: WAIT_SECONDS
+          value: "60"
+        - name: DRIVER
+          value: chrome
+      runAfter:
+        - deploy-image
+      taskRef:
+        kind: Task
+        name: behave
+      workspaces:
+        - name: source
+          workspace: shopcarts-pipeline-workspace
   workspaces:
     - name: shopcarts-pipeline-workspace
