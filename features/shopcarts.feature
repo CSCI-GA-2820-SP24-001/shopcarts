@@ -143,3 +143,20 @@ Feature: The shopcarts service back-end
         And the "Item Product ID" field should not be empty
         And the "Item Product Price" field should not be empty
         And the "Item Quantity" field should not be empty
+    
+    # LIST ALL ITEMS IN SHOPCART
+    Scenario: List all items in shopcart
+        When I visit the "Home Page"
+        And I set the "Shopcart User ID" to "1"
+        And I press the "Search Shopcart" button
+        Then I should see the message "Success"
+        When I copy the "Shopcart ID" field
+        And I paste the "Item Shopcart ID" field
+        And I press the "Search Item" button
+        Then the "Item ID" field should not be empty
+        And the "Item Product Name" field should not be empty
+        And the "Item Product ID" field should not be empty
+        And the "Item Product Price" field should not be empty
+        And the "Item Quantity" field should not be empty
+
+    

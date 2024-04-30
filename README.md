@@ -48,7 +48,53 @@ tests/                     - test cases package
 ├── test_models.py         - test suite for data models
 └── test_routes.py         - test suite for service routes
 ```
+## Models
 
+##### `Shopcart`
+
+| `Name`      | `Description`             | `Data type` |
+| ----------- | --------------------- | --------------- |
+| id | Unique ID for the shopcart. | uuid         |
+| user_id | Unique ID tying a User ID to the shopcart. | uuid         |
+| items | List of items in the shopcart | `items`         |
+
+##### `Item`
+
+| `Name`      | `Description`             | `Data type` |
+| ----------- | --------------------- | --------------- |
+| id | Unique ID for the item. | uuid         |
+| cart_id | ID of the shopcart it belongs to | uuid       |
+| product_name | Name of the product | String       |
+| product_id | ID of the product | uuid       |
+| quantity | Quantity of the product in the cart | Number       |
+| product_price | Price of the product when it was added | Float       |
+
+## Routes
+
+```text
+$ flask routes
+
+Endpoint                       Methods  Rule
+-----------------------------  -------  -----------------------------------------------------
+index                          GET      /
+health                         GET      /health      
+
+create_shopcarts               POST     /api/shopcarts
+get_shopcarts                  GET      /api/shopcarts/<int:shopcart_id
+delete_shopcarts               DELETE   /api/shopcarts/<int:shopcart_id>
+list_shopcarts                 GET      /api/shopcarts
+update_shopcarts               PUT      /api/shopcarts/<int:shopcart_id>
+
+delete_item                    DELETE   /api/shopcarts/<int:shopcart_id>/items/<int:product_id> 
+delete_items                   DELETE   /api/shopcarts/<int:shopcart_id>/items              
+list_items                     GET      /api/shopcarts/<int:shopcart_id>/items
+create_item                    POST     /api/shopcarts/<int:shopcart_id>/items
+get_item                       GET      /api/shopcarts/<int:shopcart_id>/items/<int:product_id>
+update_shopcarts_item          PUT      /api/shopcarts/<int:shopcart_id>/items/<int:product_id>
+clear_shopcart                 DELETE   /api/shopcarts/<int:shopcart_id>/items/clear
+increment_item_quantity        PUT      /api//shopcarts/<int:shopcart_id>/items/<int:item_id>/increment
+decrement_item_quantity        PUT      /api/shopcarts/<int:shopcart_id>/items/<int:item_id>/decrement           
+```
 ## License
 
 Copyright (c) 2016, 2024 [John Rofrano](https://www.linkedin.com/in/JohnRofrano/). All rights reserved.
