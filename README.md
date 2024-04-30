@@ -54,20 +54,20 @@ tests/                     - test cases package
 
 | `Name`      | `Description`             | `Data type` |
 | ----------- | --------------------- | --------------- |
-| id | Unique ID for the shopcart. | uuid         |
-| user_id | Unique ID tying a User ID to the shopcart. | uuid         |
-| items | List of items in the shopcart | `items`         |
+| id | Unique ID for the shopcart. | Integer         |
+| user_id | Unique ID tying a User ID to the shopcart. | String         |
+| items | List of items in the shopcart | `items`: List        |
 
 ##### `Item`
 
 | `Name`      | `Description`             | `Data type` |
 | ----------- | --------------------- | --------------- |
-| id | Unique ID for the item. | uuid         |
-| cart_id | ID of the shopcart it belongs to | uuid       |
+| id | Unique ID for the item. | Integer         |
+| cart_id | ID of the shopcart it belongs to | Integer       |
 | product_name | Name of the product | String       |
-| product_id | ID of the product | uuid       |
-| quantity | Quantity of the product in the cart | Number       |
-| product_price | Price of the product when it was added | Float       |
+| product_id | ID of the product | Integer       |
+| quantity | Quantity of the product in the cart | Integer       |
+| product_price | Price of the product when it was added | Numeric       |
 
 ## Routes
 
