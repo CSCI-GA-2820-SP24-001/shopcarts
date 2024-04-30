@@ -23,7 +23,7 @@ spec:
       containers:
         - name: shopcarts
           image: cluster-registry:32000/shopcarts:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP
