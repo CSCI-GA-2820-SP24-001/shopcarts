@@ -72,10 +72,10 @@ deploy: ## Deploy the service on local Kubernetes
 .PHONY: build-docker
 build-docker: ## Build the docker image and push it to the registry
 	$(info Building the docker image and pushing it to the registry...)
-	docker build -t shopcarts:1.0 .
+	docker build -t shopcarts:latest .
 	sudo bash -c "echo '127.0.0.1    cluster-registry' >> /etc/hosts"
-	docker tag shopcarts:1.0 cluster-registry:32000/shopcarts:1.0
-	docker push cluster-registry:32000/shopcarts:1.0
+	docker tag shopcarts:latest cluster-registry:32000/shopcarts:latest
+	docker push cluster-registry:32000/shopcarts:latest
 
 .PHONY: setup-cluster
 setup-cluster: ## Setup the cluster and deploy the service
